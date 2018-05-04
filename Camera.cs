@@ -14,13 +14,10 @@ namespace She
         public Vector3 Target;
         public Vector3 LookDirection;
         public Vector3 RightAxis;
-        public float Sensitivity = 2f;
-        public float ZoomSensitivity = 2f;
+        public float Sensitivity = 10f;
+        public float ZoomSensitivity = 40f;
         public float RotationSensitivity = 0.02f;
-        public float Scale = 1f;
-
-        public float ScaleXY = 1.0f;
-        public float ScaleZ = 0.1f;
+        public float Scale = 0.5f;
 
         public Camera()
         {
