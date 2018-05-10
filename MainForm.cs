@@ -204,7 +204,7 @@ namespace She
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(Color.White);
 
-            //GL.FrontFace(FrontFaceDirection.Ccw);
+            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GlControl1Resize(null, null);
         }
 
