@@ -14,9 +14,9 @@ namespace She
         public Vector3 Target;
         public Vector3 LookDirection;
         public Vector3 RightAxis;
-        public float Sensitivity = 0.05f;
+        public float Sensitivity = 0.01f;
         public float ZoomSensitivity = 0.1f;
-        public float RotationSensitivity = 0.02f;
+        public float RotationSensitivity = 0.005f;
         public float Scale = 0.5f;
 
         public Camera()
@@ -37,6 +37,7 @@ namespace She
             if (delta > 0)
             {
                 // Приближать точку наблюдения к центру наблюдения
+
                 Position.X = Position.X + ZoomSensitivity * LookDirection.X;
                 Position.Y = Position.Y + ZoomSensitivity * LookDirection.Y;
                 Position.Z = Position.Z + ZoomSensitivity * LookDirection.Z;
@@ -44,6 +45,7 @@ namespace She
             if (delta < 0)
             {
                 // И также отдалять
+
                 Position.X = Position.X - ZoomSensitivity * LookDirection.X;
                 Position.Y = Position.Y - ZoomSensitivity * LookDirection.Y;
                 Position.Z = Position.Z - ZoomSensitivity * LookDirection.Z;
@@ -53,6 +55,7 @@ namespace She
         public void Pan(float dx, float dy)
         {
             // Двигаться вдоль вертикальной экрану координате
+
             Position.X = Position.X + Sensitivity * dy * UpDirection.X;
             Target.X = Target.X + Sensitivity * dy * UpDirection.X;
 
@@ -61,7 +64,9 @@ namespace She
 
             Position.Z = Position.Z + Sensitivity * dy * UpDirection.Z;
             Target.Z = Target.Z + Sensitivity * dy * UpDirection.Z;
+
             // И вдоль горизонтальной экрану
+
             Position.X = Position.X - Sensitivity * dx * RightAxis.X;
             Target.X = Target.X - Sensitivity * dx * RightAxis.X;
 
@@ -70,6 +75,7 @@ namespace She
 
             Position.Z = Position.Z - Sensitivity * dx * RightAxis.Z;
             Target.Z = Target.Z - Sensitivity * dx * RightAxis.Z;
+            
             //
         }
 
@@ -84,19 +90,12 @@ namespace She
             //переносим в условный ноль
             Vector3 rPosition = Position - Target;
             rPosition = Vector3.Transform(rPosition, q);
-
             
             Position = Target + rPosition;
-            //Target = Target - rTarget;
 
             UpDirection = Vector3.Transform(UpDirection, q);
             LookDirection = new Vector3(Target - Position);
             LookDirection.Normalize();
-            /*
-            Position = Vector3.Transform(Position, q);
-            Target = Vector3.Transform(Target, q);
-
-            */
 
             RightAxis = Vector3.Cross(LookDirection, UpDirection);
             RightAxis.Normalize();
