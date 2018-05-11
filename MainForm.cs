@@ -185,14 +185,14 @@ namespace She
                 GL.End();
 
                 // Отрисовка ячеек
-                //GL.PolygonOffset(0, 0);
+                GL.PolygonOffset(+1, +1);
                 //GL.EnableClientState(ArrayCap.ColorArray);
                 GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
                 Render(false);
 
                 // Отрисовка границ
 
-                //GL.PolygonOffset(+4, +4);
+                GL.PolygonOffset(0, 0);
                 //GL.DisableClientState(ArrayCap.ColorArray);
                 GL.Color3(Color.Black);
                 GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
@@ -203,6 +203,7 @@ namespace She
             glControl1.SwapBuffers();
         }
 
+        int VBO, EBO;
         void GlControl1Load(object sender, EventArgs e)
         {
             GL.Enable(EnableCap.DepthTest);
@@ -210,6 +211,15 @@ namespace She
             GL.Enable(EnableCap.CullFace);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(Color.White);
+
+            GL.EnableClientState(ArrayCap.VertexArray);
+            GL.EnableClientState(ArrayCap.ColorArray);
+
+            VBO = GL.GenBuffer();
+            EBO = GL.GenBuffer();
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GlControl1Resize(null, null);
@@ -222,7 +232,7 @@ namespace She
             float aspect = (float)glControl1.Width / (float)glControl1.Height;
             GL.Viewport(0, 0, glControl1.Width, glControl1.Height);
 
-            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspect, 0.1f, 1000f);
+            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, aspect, 0.1f, 1000f);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref projection);
 
@@ -348,14 +358,154 @@ namespace She
             int count = 0;
             ECLStructure.Cell CELL;
 
+            Colorizer.SetMinimum(77);
+            Colorizer.SetMaximum(106);
+
             GL.Begin(PrimitiveType.Quads);
 
             for (int X = 0; X < view.ecl.INIT.NX; ++X)
             {
                 for (int Y = 0; Y < view.ecl.INIT.NY; ++Y)
                 {
-                    //for (int Z = 0; Z < view.ecl.INIT.NZ; ++Z)
-                    int Z = 0;
+                    for (int Z = 0; Z < view.ecl.INIT.NZ; ++Z)
+                    //int Z = 0;
+                    {
+                        index = view.ecl.INIT.GetActive(X, Y, Z);
+                        if (index > 0)
+                        {
+                            CELL = view.ecl.EGRID.GetCell(X, Y, Z);
+
+                            value = view.ecl.RESTART.GetValue(index - 1);
+                            count++;
+
+                            if (!grid_mode) GL.Color3(Colorizer.ColorByValue(value));
+                            
+                            // TOP
+
+                            GL.Vertex3(CELL.TNW);
+                            GL.Vertex3(CELL.TSW);
+                            GL.Vertex3(CELL.TSE);
+                            GL.Vertex3(CELL.TNE);
+
+                            // LEFT
+
+                            GL.Vertex3(CELL.TNW);
+                            GL.Vertex3(CELL.BNW);
+                            GL.Vertex3(CELL.BSW);
+                            GL.Vertex3(CELL.TSW);
+                            
+                            // BOTTOM
+
+                            GL.Vertex3(CELL.BSW);
+                            GL.Vertex3(CELL.BNW);
+                            GL.Vertex3(CELL.BNE);
+                            GL.Vertex3(CELL.BSE);
+
+                            // FRONT
+
+                            GL.Vertex3(CELL.BSW);
+                            GL.Vertex3(CELL.BSE);
+                            GL.Vertex3(CELL.TSE);
+                            GL.Vertex3(CELL.TSW);
+
+                            // RIGHT
+
+                            GL.Vertex3(CELL.BSE);
+                            GL.Vertex3(CELL.BNE);
+                            GL.Vertex3(CELL.TNE);
+                            GL.Vertex3(CELL.TSE);
+
+                            // BACK
+
+                            GL.Vertex3(CELL.TNW);
+                            GL.Vertex3(CELL.TNE);
+                            GL.Vertex3(CELL.BNE);
+                            GL.Vertex3(CELL.BNW);
+                        }
+                    }
+                }
+            }
+
+            GL.End();
+        }
+
+        float XC, YC, ZC;
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            GL.DeleteBuffer(VBO);
+            GL.DeleteBuffer(EBO);
+        }
+
+        void GenerateGraphics()
+        {
+            view.ecl.ReadRestart(0);
+            view.ecl.RESTART.ReadRestartGrid("PRESSURE");
+
+            // Центрирование 
+
+            XC = (view.ecl.EGRID.XMINCOORD + view.ecl.EGRID.XMAXCOORD) * 0.5f;
+            YC = (view.ecl.EGRID.YMINCOORD + view.ecl.EGRID.YMAXCOORD) * 0.5f;
+            ZC = (view.ecl.EGRID.ZMINCOORD + view.ecl.EGRID.ZMAXCOORD) * 0.5f;
+
+            camera.Scale = 0.004f;
+
+            // 
+            GL.BufferData(
+                BufferTarget.ArrayBuffer,
+                (IntPtr)(view.ecl.EGRID.NX * view.ecl.EGRID.NY * view.ecl.EGRID.NZ * sizeof(float) * 3 * 4),
+                IntPtr.Zero,
+                BufferUsageHint.StaticDraw);
+
+            GL.BufferData(
+                BufferTarget.ElementArrayBuffer,
+                (IntPtr)(view.ecl.EGRID.NX * view.ecl.EGRID.NY * view.ecl.EGRID.NZ * sizeof(float) * 3 * 4),
+                IntPtr.Zero,
+                BufferUsageHint.StaticDraw);
+
+            IntPtr VertexPtr = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
+            IntPtr ElementPtr = GL.MapBuffer(BufferTarget.ElementArrayBuffer, BufferAccess.ReadWrite);
+
+            ECLStructure.Cell CELL;
+            int index = 0;
+            float value = 0;
+            int count = 0;
+
+            unsafe
+            {
+                float* vertex_mem = (float*)VertexPtr;
+                int* index_mem = (int*)ElementPtr;
+                byte* color_mem = (byte*)(VertexPtr + view.ecl.EGRID.NX * view.ecl.EGRID.NY * view.ecl.EGRID.NZ * sizeof(float) * 3 * 4);
+
+                for (int Z = 0; Z < view.ecl.INIT.NZ; ++Z)
+                {
+                    for (int Y = 0; Y < view.ecl.INIT.NY; ++Y)
+                    {
+                        for (int X = 0; X < view.ecl.INIT.NX; ++X)
+                        {
+                            index = view.ecl.INIT.GetActive(X, Y, Z);
+                            if (index > 0)
+                            {
+                                CELL = view.ecl.EGRID.GetCell(X, Y, Z);
+
+                                value = view.ecl.RESTART.GetValue(index - 1);
+                                count++;
+                            }
+                    }
+                }
+            }
+
+
+
+
+            Colorizer.SetMinimum(77);
+            Colorizer.SetMaximum(106);
+
+            GL.Begin(PrimitiveType.Quads);
+
+            {
+                {
+                    //int Z = 0;
                     {
                         index = view.ecl.INIT.GetActive(X, Y, Z);
                         if (index > 0)
@@ -367,77 +517,55 @@ namespace She
 
                             if (!grid_mode) GL.Color3(Colorizer.ColorByValue(value));
 
+                            // TOP
 
                             GL.Vertex3(CELL.TNW);
-                            GL.Vertex3(CELL.TNE);
+                            GL.Vertex3(CELL.TSW);
                             GL.Vertex3(CELL.TSE);
+                            GL.Vertex3(CELL.TNE);
+
+                            // LEFT
+
+                            GL.Vertex3(CELL.TNW);
+                            GL.Vertex3(CELL.BNW);
+                            GL.Vertex3(CELL.BSW);
                             GL.Vertex3(CELL.TSW);
 
-                            /*
-                            GL.Vertex3(CELL.TSW);
+                            // BOTTOM
+
                             GL.Vertex3(CELL.BSW);
                             GL.Vertex3(CELL.BNW);
-                            GL.Vertex3(CELL.TNW);
-
-                            */
-                            GL.Vertex3(CELL.TSW);
-                            GL.Vertex3(CELL.TSE);
-                            GL.Vertex3(CELL.BSE);
-                            GL.Vertex3(CELL.BSW);
-
-                            GL.Vertex3(CELL.TSE);
-                            GL.Vertex3(CELL.TNE);
                             GL.Vertex3(CELL.BNE);
                             GL.Vertex3(CELL.BSE);
 
-                            GL.Vertex3(CELL.TNE);
-                            GL.Vertex3(CELL.TNW);
-                            GL.Vertex3(CELL.BNW);
-                            GL.Vertex3(CELL.BNE);
+                            // FRONT
 
                             GL.Vertex3(CELL.BSW);
                             GL.Vertex3(CELL.BSE);
+                            GL.Vertex3(CELL.TSE);
+                            GL.Vertex3(CELL.TSW);
+
+                            // RIGHT
+
+                            GL.Vertex3(CELL.BSE);
+                            GL.Vertex3(CELL.BNE);
+                            GL.Vertex3(CELL.TNE);
+                            GL.Vertex3(CELL.TSE);
+
+                            // BACK
+
+                            GL.Vertex3(CELL.TNW);
+                            GL.Vertex3(CELL.TNE);
                             GL.Vertex3(CELL.BNE);
                             GL.Vertex3(CELL.BNW);
-                       
                         }
                     }
                 }
             }
 
-            GL.End();
-        }
 
-        float XC, YC, ZC;
+                UpdateModelView();
 
-        void GenerateGraphics()
-        {
-            view.ecl.ReadRestart(1);
-            view.ecl.RESTART.ReadRestartGrid("SWAT");
-
-            // Центрирование 
-
-            XC = (view.ecl.EGRID.XMINCOORD + view.ecl.EGRID.XMAXCOORD) * 0.5f;
-            YC = (view.ecl.EGRID.YMINCOORD + view.ecl.EGRID.YMAXCOORD) * 0.5f;
-            ZC = (view.ecl.EGRID.ZMINCOORD + view.ecl.EGRID.ZMAXCOORD) * 0.5f;
-
-            /*
-             * 
-camera.Position = new Vector3(XC, YC, ZC + 2000);
-camera.Target = new Vector3(XC, YC, ZC);
-camera.UpDirection = new Vector3(0, 1, 0);
-
-
-camera.LookDirection = new Vector3(camera.Target - camera.Position);
-camera.LookDirection.Normalize();
-
-camera.RightAxis = Vector3.Cross(camera.LookDirection, camera.UpDirection);
-camera.RightAxis.Normalize();
-*/
-
-            camera.Scale = 0.004f;
-
-            UpdateModelView();
             GlControl1Paint(null, null);
             
         }

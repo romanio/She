@@ -21,7 +21,7 @@ namespace She
 
         public Camera()
         {
-            Position = new Vector3(0, 0, -6);
+            Position = new Vector3(0, 0, +6);
             Target = new Vector3(0, 0, 0);
             UpDirection = new Vector3(0, 1, 0);
 
