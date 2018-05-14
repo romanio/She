@@ -170,6 +170,7 @@ namespace She.ECLStructure
             br.OpenBinaryFile(FILENAME);
             SetPosition(property);
             br.ReadHeader();
+
             DATA = br.ReadFloatList(br.header.count);
             //
             br.CloseBinaryFile();

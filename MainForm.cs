@@ -48,7 +48,6 @@ namespace She
 
             GL.PushMatrix();
 
-            //GL.Translate(-XC, -YC, -ZC);
             GL.Scale(camera.Scale, camera.Scale, camera.Scale * 6);
             GL.Translate(-XC, -YC , -ZC );
 
@@ -186,17 +185,18 @@ namespace She
 
                 // Отрисовка ячеек
                 GL.PolygonOffset(+1, +1);
-                //GL.EnableClientState(ArrayCap.ColorArray);
+                GL.EnableClientState(ArrayCap.ColorArray);
                 GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
-                Render(false);
+                GL.DrawElements(PrimitiveType.Quads, ElementCount, DrawElementsType.UnsignedInt, 0);
+
 
                 // Отрисовка границ
 
                 GL.PolygonOffset(0, 0);
-                //GL.DisableClientState(ArrayCap.ColorArray);
+                GL.DisableClientState(ArrayCap.ColorArray);
                 GL.Color3(Color.Black);
                 GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
-                Render(true);
+                GL.DrawElements(PrimitiveType.Quads, ElementCount, DrawElementsType.UnsignedInt, 0);
             }
 
             GL.PopMatrix();
@@ -316,32 +316,6 @@ namespace She
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            GlControl1Paint(null, null);
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            camera.Rotate(0, 1);
-            UpdateModelView();
-            GlControl1Paint(null, null);
-        }
-
-        private void button2_Click_1(object sender, EventArgs e)
-        {
-            camera.Rotate(1, 0);
-            UpdateModelView();
-            GlControl1Paint(null, null);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            camera.Rotate(-1, 0);
-            UpdateModelView();
-            GlControl1Paint(null, null);
-        }
-
         private void openModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (fileDialog.ShowDialog() == DialogResult.OK)
@@ -351,82 +325,12 @@ namespace She
             }
         }
 
+        int ElementCount;
+
         void Render(bool grid_mode)
         {
-            int index = 0;
-            float value = 0;
-            int count = 0;
-            ECLStructure.Cell CELL;
-
             Colorizer.SetMinimum(77);
             Colorizer.SetMaximum(106);
-
-            GL.Begin(PrimitiveType.Quads);
-
-            for (int X = 0; X < view.ecl.INIT.NX; ++X)
-            {
-                for (int Y = 0; Y < view.ecl.INIT.NY; ++Y)
-                {
-                    for (int Z = 0; Z < view.ecl.INIT.NZ; ++Z)
-                    //int Z = 0;
-                    {
-                        index = view.ecl.INIT.GetActive(X, Y, Z);
-                        if (index > 0)
-                        {
-                            CELL = view.ecl.EGRID.GetCell(X, Y, Z);
-
-                            value = view.ecl.RESTART.GetValue(index - 1);
-                            count++;
-
-                            if (!grid_mode) GL.Color3(Colorizer.ColorByValue(value));
-                            
-                            // TOP
-
-                            GL.Vertex3(CELL.TNW);
-                            GL.Vertex3(CELL.TSW);
-                            GL.Vertex3(CELL.TSE);
-                            GL.Vertex3(CELL.TNE);
-
-                            // LEFT
-
-                            GL.Vertex3(CELL.TNW);
-                            GL.Vertex3(CELL.BNW);
-                            GL.Vertex3(CELL.BSW);
-                            GL.Vertex3(CELL.TSW);
-                            
-                            // BOTTOM
-
-                            GL.Vertex3(CELL.BSW);
-                            GL.Vertex3(CELL.BNW);
-                            GL.Vertex3(CELL.BNE);
-                            GL.Vertex3(CELL.BSE);
-
-                            // FRONT
-
-                            GL.Vertex3(CELL.BSW);
-                            GL.Vertex3(CELL.BSE);
-                            GL.Vertex3(CELL.TSE);
-                            GL.Vertex3(CELL.TSW);
-
-                            // RIGHT
-
-                            GL.Vertex3(CELL.BSE);
-                            GL.Vertex3(CELL.BNE);
-                            GL.Vertex3(CELL.TNE);
-                            GL.Vertex3(CELL.TSE);
-
-                            // BACK
-
-                            GL.Vertex3(CELL.TNW);
-                            GL.Vertex3(CELL.TNE);
-                            GL.Vertex3(CELL.BNE);
-                            GL.Vertex3(CELL.BNW);
-                        }
-                    }
-                }
-            }
-
-            GL.End();
         }
 
         float XC, YC, ZC;
@@ -450,32 +354,43 @@ namespace She
 
             camera.Scale = 0.004f;
 
+            Colorizer.SetMinimum(77);
+            Colorizer.SetMaximum(106);
+
             // 
             GL.BufferData(
                 BufferTarget.ArrayBuffer,
-                (IntPtr)(view.ecl.EGRID.NX * view.ecl.EGRID.NY * view.ecl.EGRID.NZ * sizeof(float) * 3 * 4),
-                IntPtr.Zero,
-                BufferUsageHint.StaticDraw);
-
-            GL.BufferData(
-                BufferTarget.ElementArrayBuffer,
-                (IntPtr)(view.ecl.EGRID.NX * view.ecl.EGRID.NY * view.ecl.EGRID.NZ * sizeof(float) * 3 * 4),
+                (IntPtr)(view.ecl.INIT.NACTIV * sizeof(float) * 3 * 8 + view.ecl.INIT.NACTIV * sizeof(byte) * 3 * 8), // Три координаты по float, 8 вершин и 
                 IntPtr.Zero,
                 BufferUsageHint.StaticDraw);
 
             IntPtr VertexPtr = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
+
+            GL.BufferData(
+                BufferTarget.ElementArrayBuffer,
+                (IntPtr)(view.ecl.INIT.NACTIV * sizeof(float) * 3 * 24),
+                IntPtr.Zero,
+                BufferUsageHint.StaticDraw);
+
             IntPtr ElementPtr = GL.MapBuffer(BufferTarget.ElementArrayBuffer, BufferAccess.ReadWrite);
 
+            GL.VertexPointer(3, VertexPointerType.Float, 0, 0);
+            GL.ColorPointer(3, ColorPointerType.UnsignedByte, 0, view.ecl.INIT.NACTIV * sizeof(float) * 3 * 8);
+
+
             ECLStructure.Cell CELL;
+
             int index = 0;
             float value = 0;
             int count = 0;
-
+            int cell_index = 0;
+            Color color;
+            
             unsafe
             {
                 float* vertex_mem = (float*)VertexPtr;
                 int* index_mem = (int*)ElementPtr;
-                byte* color_mem = (byte*)(VertexPtr + view.ecl.EGRID.NX * view.ecl.EGRID.NY * view.ecl.EGRID.NZ * sizeof(float) * 3 * 4);
+                byte* color_mem = (byte*)(VertexPtr + view.ecl.INIT.NACTIV * sizeof(float) * 3 * 8);
 
                 for (int Z = 0; Z < view.ecl.INIT.NZ; ++Z)
                 {
@@ -483,98 +398,131 @@ namespace She
                     {
                         for (int X = 0; X < view.ecl.INIT.NX; ++X)
                         {
-                            index = view.ecl.INIT.GetActive(X, Y, Z);
-                            if (index > 0)
+                            cell_index = view.ecl.INIT.GetActive(X, Y, Z);
+
+                            if (cell_index > 0) // active only
                             {
                                 CELL = view.ecl.EGRID.GetCell(X, Y, Z);
+                                value = view.ecl.RESTART.GetValue(cell_index - 1);
+                                color = Colorizer.ColorByValue(value);
 
-                                value = view.ecl.RESTART.GetValue(index - 1);
-                                count++;
+                                index_mem[count+0] = index+0;
+                                index_mem[count+1] = index+1;
+                                index_mem[count+2] = index+2;
+                                index_mem[count+3] = index+3;
+                                index_mem[count+4] = index+0;
+                                index_mem[count+5] = index+4;
+                                index_mem[count+6] = index+5;
+                                index_mem[count+7] = index+1;
+                                index_mem[count+8] = index+5;
+                                index_mem[count+9] = index+4;
+                                index_mem[count+10] = index+7;
+                                index_mem[count+11] = index+6;
+                                index_mem[count+12] = index+5;
+                                index_mem[count+13] = index+6;
+                                index_mem[count+14] = index+2;
+                                index_mem[count+15] = index+1;
+                                index_mem[count+16] = index+6;
+                                index_mem[count+17] = index+7;
+                                index_mem[count+18] = index+3;
+                                index_mem[count+19] = index+2;
+                                index_mem[count+20] = index+0;
+                                index_mem[count+21] = index+3;
+                                index_mem[count+22] = index+7;
+                                index_mem[count+23] = index+4;
+
+                                count = count + 24;
+
+                                vertex_mem[index * 3 + 0] = CELL.TNW.X;
+                                vertex_mem[index * 3 + 1] = CELL.TNW.Y;
+                                vertex_mem[index * 3 + 2] = CELL.TNW.Z;
+
+                                color_mem[index * 3 + 0] = color.R;
+                                color_mem[index * 3 + 1] = color.G;
+                                color_mem[index * 3 + 2] = color.B;
+
+                                index++;
+
+                                vertex_mem[index * 3 + 0] = CELL.TSW.X;
+                                vertex_mem[index * 3 + 1] = CELL.TSW.Y;
+                                vertex_mem[index * 3 + 2] = CELL.TSW.Z;
+
+                                color_mem[index * 3 + 0] = color.R;
+                                color_mem[index * 3 + 1] = color.G;
+                                color_mem[index * 3 + 2] = color.B;
+
+                                index++;
+
+                                vertex_mem[index * 3 + 0] = CELL.TSE.X;
+                                vertex_mem[index * 3 + 1] = CELL.TSE.Y;
+                                vertex_mem[index * 3 + 2] = CELL.TSE.Z;
+
+                                color_mem[index * 3 + 0] = color.R;
+                                color_mem[index * 3 + 1] = color.G;
+                                color_mem[index * 3 + 2] = color.B;
+
+                                index++;
+
+                                vertex_mem[index * 3 + 0] = CELL.TNE.X;
+                                vertex_mem[index * 3 + 1] = CELL.TNE.Y;
+                                vertex_mem[index * 3 + 2] = CELL.TNE.Z;
+
+                                color_mem[index * 3 + 0] = color.R;
+                                color_mem[index * 3 + 1] = color.G;
+                                color_mem[index * 3 + 2] = color.B;
+
+                                index++;
+
+                                vertex_mem[index * 3 + 0] = CELL.BNW.X;
+                                vertex_mem[index * 3 + 1] = CELL.BNW.Y;
+                                vertex_mem[index * 3 + 2] = CELL.BNW.Z;
+
+                                color_mem[index * 3 + 0] = color.R;
+                                color_mem[index * 3 + 1] = color.G;
+                                color_mem[index * 3 + 2] = color.B;
+
+                                index++;
+
+                                vertex_mem[index * 3 + 0] = CELL.BSW.X;
+                                vertex_mem[index * 3 + 1] = CELL.BSW.Y;
+                                vertex_mem[index * 3 + 2] = CELL.BSW.Z;
+
+                                color_mem[index * 3 + 0] = color.R;
+                                color_mem[index * 3 + 1] = color.G;
+                                color_mem[index * 3 + 2] = color.B;
+
+                                index++;
+
+                                vertex_mem[index * 3 + 0] = CELL.BSE.X;
+                                vertex_mem[index * 3 + 1] = CELL.BSE.Y;
+                                vertex_mem[index * 3 + 2] = CELL.BSE.Z;
+
+                                color_mem[index * 3 + 0] = color.R;
+                                color_mem[index * 3 + 1] = color.G;
+                                color_mem[index * 3 + 2] = color.B;
+
+                                index++;
+
+                                vertex_mem[index * 3 + 0] = CELL.BNE.X;
+                                vertex_mem[index * 3 + 1] = CELL.BNE.Y;
+                                vertex_mem[index * 3 + 2] = CELL.BNE.Z;
+
+                                color_mem[index * 3 + 0] = color.R;
+                                color_mem[index * 3 + 1] = color.G;
+                                color_mem[index * 3 + 2] = color.B;
+
+                                index++;
+                                //
                             }
-                    }
-                }
-            }
-
-
-
-
-            Colorizer.SetMinimum(77);
-            Colorizer.SetMaximum(106);
-
-            GL.Begin(PrimitiveType.Quads);
-
-            {
-                {
-                    //int Z = 0;
-                    {
-                        index = view.ecl.INIT.GetActive(X, Y, Z);
-                        if (index > 0)
-                        {
-                            CELL = view.ecl.EGRID.GetCell(X, Y, Z);
-
-                            value = view.ecl.RESTART.GetValue(index - 1);
-                            count++;
-
-                            if (!grid_mode) GL.Color3(Colorizer.ColorByValue(value));
-
-                            // TOP
-
-                            GL.Vertex3(CELL.TNW);
-                            GL.Vertex3(CELL.TSW);
-                            GL.Vertex3(CELL.TSE);
-                            GL.Vertex3(CELL.TNE);
-
-                            // LEFT
-
-                            GL.Vertex3(CELL.TNW);
-                            GL.Vertex3(CELL.BNW);
-                            GL.Vertex3(CELL.BSW);
-                            GL.Vertex3(CELL.TSW);
-
-                            // BOTTOM
-
-                            GL.Vertex3(CELL.BSW);
-                            GL.Vertex3(CELL.BNW);
-                            GL.Vertex3(CELL.BNE);
-                            GL.Vertex3(CELL.BSE);
-
-                            // FRONT
-
-                            GL.Vertex3(CELL.BSW);
-                            GL.Vertex3(CELL.BSE);
-                            GL.Vertex3(CELL.TSE);
-                            GL.Vertex3(CELL.TSW);
-
-                            // RIGHT
-
-                            GL.Vertex3(CELL.BSE);
-                            GL.Vertex3(CELL.BNE);
-                            GL.Vertex3(CELL.TNE);
-                            GL.Vertex3(CELL.TSE);
-
-                            // BACK
-
-                            GL.Vertex3(CELL.TNW);
-                            GL.Vertex3(CELL.TNE);
-                            GL.Vertex3(CELL.BNE);
-                            GL.Vertex3(CELL.BNW);
                         }
                     }
                 }
             }
 
 
-                UpdateModelView();
-
-            GlControl1Paint(null, null);
-            
+            ElementCount = count;
+            GL.UnmapBuffer(BufferTarget.ArrayBuffer);
+            GL.UnmapBuffer(BufferTarget.ElementArrayBuffer);
         }
-
-        private void button1_Click_2(object sender, EventArgs e)
-        {
-            // Scale 0.5 times
-
-
-        }
-    }
+   }
 }
