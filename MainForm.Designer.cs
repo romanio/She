@@ -6,7 +6,7 @@
 		/// Designer variable used to keep track of non-visual components.
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
-		private OpenTK.GLControl glControl1;
+		private OpenTK.GLControl glControl;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -29,7 +29,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.glControl1 = new OpenTK.GLControl();
+            this.glControl = new OpenTK.GLControl();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -39,21 +39,21 @@
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // glControl1
+            // glControl
             // 
-            this.glControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.glControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(12, 42);
-            this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(443, 343);
-            this.glControl1.TabIndex = 1;
-            this.glControl1.VSync = false;
-            this.glControl1.Load += new System.EventHandler(this.GlControl1Load);
-            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.GlControl1Paint);
-            this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.GlControl1MouseMove);
-            this.glControl1.Resize += new System.EventHandler(this.GlControl1Resize);
+            this.glControl.BackColor = System.Drawing.Color.Black;
+            this.glControl.Location = new System.Drawing.Point(12, 42);
+            this.glControl.Name = "glControl";
+            this.glControl.Size = new System.Drawing.Size(581, 343);
+            this.glControl.TabIndex = 1;
+            this.glControl.VSync = false;
+            this.glControl.Load += new System.EventHandler(this.GlControlLoad);
+            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.GlControlPaint);
+            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.GlControlOnMouseMove);
+            this.glControl.Resize += new System.EventHandler(this.GlControlResize);
             // 
             // statusStrip1
             // 
@@ -101,7 +101,7 @@
             this.ClientSize = new System.Drawing.Size(605, 417);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.glControl1);
+            this.Controls.Add(this.glControl);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";

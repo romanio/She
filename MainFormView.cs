@@ -10,6 +10,7 @@ namespace She
     public class MainFormView
     {
         public ECL ecl = null;
+
         public List<string> Wellnames { get; set; }
         public List<string> RestartDates { get; set; }
         public List<WELLDATA> WellRestart { get; set; }
@@ -21,7 +22,6 @@ namespace She
             ecl.OpenData(filename);
             ecl.ReadVectors();
             ecl.ReadRestartList();
-
             
             // Update wellnames
 
