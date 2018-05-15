@@ -30,6 +30,14 @@ namespace She
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
                 view.OpenNewModel(fileDialog.FileName);
+
+                boxRestartDate.Items.Clear();
+                boxRestartDate.Items.AddRange(view.RestartDates.ToArray());
+
+                treeProperties.Nodes[0].Nodes.Clear();
+                for (int iw = 0; iw < view.StaticProperties.Count; ++iw)
+                    treeProperties.Nodes[0].Nodes.Add(view.StaticProperties[iw]);
+
                 engine.GenerateGraphics(view.ecl);
             }
         }
@@ -65,7 +73,14 @@ namespace She
             engine.UnLoad();
         }
 
-
+        private void treeProperties_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Parent.Index == 0) // Static 
+            {
+                view.SetStaticProperty(e.Node.Text);
+                //engine.GenerateGraphics()
+            }
+        }
 
         /*
         void GlControl1Paint(object sender, PaintEventArgs e)

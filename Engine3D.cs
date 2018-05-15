@@ -245,13 +245,15 @@ namespace She
         public void Render()
         {
             // Отрисовка ячеек
+
             GL.PolygonOffset(+1, +1);
             GL.EnableClientState(ArrayCap.ColorArray);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
             GL.DrawElements(PrimitiveType.Quads, ElementCount, DrawElementsType.UnsignedInt, 0);
 
-
             // Отрисовка границ
+
+            System.Diagnostics.Debug.WriteLine(ElementCount);
 
             GL.PolygonOffset(0, 0);
             GL.DisableClientState(ArrayCap.ColorArray);
@@ -316,7 +318,7 @@ namespace She
                 int* index_mem = (int*)ElementPtr;
                 byte* color_mem = (byte*)(VertexPtr + ecl.INIT.NACTIV * sizeof(float) * 3 * 8);
 
-                for (int Z = 0; Z < ecl.INIT.NZ; ++Z)
+               for (int Z = 0; Z < ecl.INIT.NZ; ++Z)
                 {
                     for (int Y = 0; Y < ecl.INIT.NY; ++Y)
                     {
@@ -324,9 +326,12 @@ namespace She
                         {
                             cell_index = ecl.INIT.GetActive(X, Y, Z);
 
-                            if (cell_index > 0) // active only
+                            if (cell_index > 0)
                             {
                                 CELL = ecl.EGRID.GetCell(X, Y, Z);
+
+                               // var NCELL = ecl.EGRID.GetCell(X + 1, Y, Z);
+
                                 value = ecl.RESTART.GetValue(cell_index - 1);
                                 color = Colorizer.ColorByValue(value);
 
@@ -334,22 +339,27 @@ namespace She
                                 index_mem[count + 1] = index + 1;
                                 index_mem[count + 2] = index + 2;
                                 index_mem[count + 3] = index + 3;
-                                index_mem[count + 4] = index + 0;
+
+                                index_mem[count + 4] = index + 5;
                                 index_mem[count + 5] = index + 4;
-                                index_mem[count + 6] = index + 5;
-                                index_mem[count + 7] = index + 1;
-                                index_mem[count + 8] = index + 5;
+                                index_mem[count + 6] = index + 7;
+                                index_mem[count + 7] = index + 6;
+
+                                index_mem[count + 8] = index + 0;
                                 index_mem[count + 9] = index + 4;
-                                index_mem[count + 10] = index + 7;
-                                index_mem[count + 11] = index + 6;
+                                index_mem[count + 10] = index + 5;
+                                index_mem[count + 11] = index + 1;
+
                                 index_mem[count + 12] = index + 5;
                                 index_mem[count + 13] = index + 6;
                                 index_mem[count + 14] = index + 2;
                                 index_mem[count + 15] = index + 1;
+
                                 index_mem[count + 16] = index + 6;
                                 index_mem[count + 17] = index + 7;
                                 index_mem[count + 18] = index + 3;
                                 index_mem[count + 19] = index + 2;
+
                                 index_mem[count + 20] = index + 0;
                                 index_mem[count + 21] = index + 3;
                                 index_mem[count + 22] = index + 7;
@@ -443,7 +453,7 @@ namespace She
                 }
             }
 
-            ElementCount = count / 24;
+            ElementCount = count;
             GL.UnmapBuffer(BufferTarget.ArrayBuffer);
             GL.UnmapBuffer(BufferTarget.ElementArrayBuffer);
         }
