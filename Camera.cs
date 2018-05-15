@@ -16,7 +16,7 @@ namespace She
         public Vector3 RightAxis;
         public float Sensitivity = 0.01f;
         public float ZoomSensitivity = 0.1f;
-        public float RotationSensitivity = 0.01f;
+        public float RotationSensitivity = 0.005f;
         public float Scale = 0.5f;
 
         public Camera()
@@ -75,6 +75,8 @@ namespace She
 
             Position.Z = Position.Z - Sensitivity * dx * RightAxis.Z;
             Target.Z = Target.Z - Sensitivity * dx * RightAxis.Z;
+            
+            //
         }
 
         public void Rotate(float dx, float dy)
@@ -84,8 +86,8 @@ namespace She
             Quaternion q2 = Quaternion.FromAxisAngle(RightAxis, -RotationSensitivity * dy);
             Quaternion q = q1 * q2;
 
-            // Вращать вокруг центра Target, для этого текущую Position переносим в условный ноль
-
+            // Вращать вокруг центра Target, для этого текущую Position
+            //переносим в условный ноль
             Vector3 rPosition = Position - Target;
             rPosition = Vector3.Transform(rPosition, q);
             

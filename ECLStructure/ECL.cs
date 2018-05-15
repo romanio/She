@@ -155,7 +155,6 @@ namespace She.ECLStructure
             if (RESTART.TYPE_RESTART[step] == 0)
             {
                 // Случай, если расчет задан "рассыпухой"
-
                 string ext = ".X" + RESTART.REPORT[step].ToString().PadLeft(4, '0');
 
                 if (FILES.ContainsKey(ext))
