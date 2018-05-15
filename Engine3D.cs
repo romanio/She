@@ -239,7 +239,7 @@ namespace She
             GL.End();
         }
 
-        int ElementCount;
+        public int ElementCount;
         ECLStructure.Colorizer Colorizer = new ECLStructure.Colorizer();
 
         public void Render()
@@ -253,7 +253,7 @@ namespace She
 
             // Отрисовка границ
 
-            System.Diagnostics.Debug.WriteLine(ElementCount);
+           // System.Diagnostics.Debug.WriteLine(ElementCount);
 
             GL.PolygonOffset(0, 0);
             GL.DisableClientState(ArrayCap.ColorArray);
@@ -280,8 +280,8 @@ namespace She
 
             camera.Scale = 0.004f;
 
-            Colorizer.SetMinimum(77);
-            Colorizer.SetMaximum(106);
+            Colorizer.SetMinimum(200);
+            Colorizer.SetMaximum(300);
 
             // 
             GL.BufferData(
@@ -311,6 +311,9 @@ namespace She
             int count = 0;
             int cell_index = 0;
             Color color;
+            bool skip_right_face = false;
+            bool skip_front_face = false;
+            bool skip_bottom_face = false;
 
             unsafe
             {
@@ -330,42 +333,121 @@ namespace She
                             {
                                 CELL = ecl.EGRID.GetCell(X, Y, Z);
 
-                               // var NCELL = ecl.EGRID.GetCell(X + 1, Y, Z);
-
                                 value = ecl.RESTART.GetValue(cell_index - 1);
                                 color = Colorizer.ColorByValue(value);
 
-                                index_mem[count + 0] = index + 0;
-                                index_mem[count + 1] = index + 1;
-                                index_mem[count + 2] = index + 2;
-                                index_mem[count + 3] = index + 3;
 
-                                index_mem[count + 4] = index + 5;
-                                index_mem[count + 5] = index + 4;
-                                index_mem[count + 6] = index + 7;
-                                index_mem[count + 7] = index + 6;
+                                // Check next X-neightbore
 
-                                index_mem[count + 8] = index + 0;
-                                index_mem[count + 9] = index + 4;
-                                index_mem[count + 10] = index + 5;
-                                index_mem[count + 11] = index + 1;
+                                skip_right_face = false;
 
-                                index_mem[count + 12] = index + 5;
-                                index_mem[count + 13] = index + 6;
-                                index_mem[count + 14] = index + 2;
-                                index_mem[count + 15] = index + 1;
+                                if (X < ecl.INIT.NX - 1)
+                                {
+                                    cell_index = ecl.INIT.GetActive(X + 1, Y, Z);
+                                    if  (cell_index > 0)
+                                    {
+                                        var NCELL = ecl.EGRID.GetCell(X + 1, Y, Z);
 
-                                index_mem[count + 16] = index + 6;
-                                index_mem[count + 17] = index + 7;
-                                index_mem[count + 18] = index + 3;
-                                index_mem[count + 19] = index + 2;
+                                        if ((CELL.TNE == NCELL.TNW) &&
+                                            (CELL.TSE == NCELL.TSW) &&
+                                            (CELL.BNE == NCELL.BNW) &&
+                                            (CELL.BSE == NCELL.BSW)) // Если правая грань по X совпадает с левой гранью по X+1, не надо ничего рисовать
+                                        {
+                                            skip_right_face = true;
+                                        }
+                                    }
+                                }
 
-                                index_mem[count + 20] = index + 0;
-                                index_mem[count + 21] = index + 3;
-                                index_mem[count + 22] = index + 7;
-                                index_mem[count + 23] = index + 4;
+                                // Check next Y-neightbore
 
-                                count = count + 24;
+                                skip_front_face = false;
+
+                                if (Y < ecl.INIT.NY - 1)
+                                {
+                                    cell_index = ecl.INIT.GetActive(X, Y + 1, Z);
+                                    if (cell_index > 0)
+                                    {
+                                        var NCELL = ecl.EGRID.GetCell(X, Y + 1, Z);
+
+                                        if ((CELL.TSW == NCELL.TNW) &&
+                                            (CELL.TSE == NCELL.TNE) &&
+                                            (CELL.BSW == NCELL.BNW) &&
+                                            (CELL.BSE == NCELL.BNE)) // Если правая грань по X совпадает с левой гранью по X+1, не надо ничего рисовать
+                                        {
+                                            skip_front_face = true;
+                                        }
+                                    }
+                                }
+
+                                // Check next Z-neightbore
+
+                                skip_bottom_face = false;
+
+                                if (Z < ecl.INIT.NZ - 1)
+                                {
+                                    cell_index = ecl.INIT.GetActive(X, Y, Z+1);
+                                    if (cell_index > 0)
+                                    {
+                                        var NCELL = ecl.EGRID.GetCell(X, Y, Z+1);
+
+                                        if ((CELL.BNW == NCELL.TNW) &&
+                                            (CELL.BNE == NCELL.TNE) &&
+                                            (CELL.BSW == NCELL.TSW) &&
+                                            (CELL.BSE == NCELL.TSE)) // Если правая грань по X совпадает с левой гранью по X+1, не надо ничего рисовать
+                                        {
+                                            skip_bottom_face = true;
+                                        }
+                                    }
+                                }
+
+                                int pos = 0;
+
+                                index_mem[count + (pos++)] = index + 0;
+                                index_mem[count + (pos++)] = index + 1;
+                                index_mem[count + (pos++)] = index + 2;
+                                index_mem[count + (pos++)] = index + 3;
+
+                                // bootom face
+
+                                if (!skip_bottom_face)
+                                {
+                                    index_mem[count + (pos++)] = index + 5;
+                                    index_mem[count + (pos++)] = index + 4;
+                                    index_mem[count + (pos++)] = index + 7;
+                                    index_mem[count + (pos++)] = index + 6;
+                                }
+
+                                index_mem[count + (pos++)] = index + 0;
+                                index_mem[count + (pos++)] = index + 4;
+                                index_mem[count + (pos++)] = index + 5;
+                                index_mem[count + (pos++)] = index + 1;
+
+                                // front face
+
+                                if (!skip_front_face)
+                                {
+                                    index_mem[count + (pos++)] = index + 5;
+                                    index_mem[count + (pos++)] = index + 6;
+                                    index_mem[count + (pos++)] = index + 2;
+                                    index_mem[count + (pos++)] = index + 1;
+                                }
+
+                                // right face
+
+                                if (!skip_right_face)
+                                {
+                                    index_mem[count + (pos++)] = index + 6;
+                                    index_mem[count + (pos++)] = index + 7;
+                                    index_mem[count + (pos++)] = index + 3;
+                                    index_mem[count + (pos++)] = index + 2;
+                                }
+
+                                index_mem[count + (pos++)] = index + 0;
+                                index_mem[count + (pos++)] = index + 3;
+                                index_mem[count + (pos++)] = index + 7;
+                                index_mem[count + (pos++)] = index + 4;
+
+                                count = count + pos;
 
                                 vertex_mem[index * 3 + 0] = CELL.TNW.X;
                                 vertex_mem[index * 3 + 1] = CELL.TNW.Y;

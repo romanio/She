@@ -46,6 +46,8 @@ namespace She
         {
             engine.Paint();
             glControl.SwapBuffers();
+
+            Text = engine.ElementCount.ToString();
         }
 
         private void GlControlResize(object sender, EventArgs e)
