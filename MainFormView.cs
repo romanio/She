@@ -10,9 +10,16 @@ namespace She
     public class MainFormView
     {
         public ECL ecl = null;
+
         public List<string> Wellnames { get; set; }
         public List<string> RestartDates { get; set; }
         public List<WELLDATA> WellRestart { get; set; }
+        public List<string> StaticProperties { get; set; }
+
+        public void SetStaticProperty(string name)
+        {
+
+        }
 
         public void OpenNewModel(string filename)
         {
@@ -21,7 +28,6 @@ namespace She
             ecl.OpenData(filename);
             ecl.ReadVectors();
             ecl.ReadRestartList();
-
             
             // Update wellnames
 
@@ -32,11 +38,23 @@ namespace She
 
             Wellnames.Sort();
 
-            ecl.ReadRestartList();
-
             RestartDates =
                 (from item in ecl.RESTART.DATE
                  select item.ToShortDateString()).ToList();
+
+            //
+            StaticProperties = new List<string>();
+
+            for (int iw = 0; iw < ecl.INIT.NAME.Count; ++iw)
+            {
+                for (int it = 0; it < ecl.INIT.NAME[iw].Length; ++it)
+                {
+                    if (ecl.INIT.NUMBER[iw][it] == ecl.INIT.NACTIV)
+                    {
+                        StaticProperties.Add(ecl.INIT.NAME[iw][it]);
+                    }
+                }
+            }
         }
     }
 }

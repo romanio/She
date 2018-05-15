@@ -10,7 +10,7 @@ namespace She.ECLStructure
     public class BigArray<T>
     {
         internal const int BLOCK_SIZE = 524288;
-        internal const int BLOCK_SIZE_LOG2 = 24;
+        internal const int BLOCK_SIZE_LOG2 = 19;
 
         T[][] _elements;
         ulong _length;
@@ -86,6 +86,7 @@ namespace She.ECLStructure
         public int NZ;
         public float[] COORD = null;
         public BigArray<float> ZCORN = null;
+        //public float[] ZCORN = null;
         public float XMINCOORD;
         public float YMINCOORD;
         public float ZMINCOORD;
@@ -150,6 +151,7 @@ namespace She.ECLStructure
 
                 if (br.header.keyword == "ZCORN")
                 {
+                    //ZCORN = br.ReadFloatList(8 * NX * NY * NZ);
                     ZCORN = br.ReadBigList((ulong)(8 * NX * NY * NZ));
                     continue;
                 }
@@ -214,6 +216,7 @@ namespace She.ECLStructure
             CELL.BNE.Z = ZCORN[(ulong)(Z * NX * NY * 8 + Y * NX * 4 + NX * NY * 4 + 2 * X + 1)];
             CELL.BSW.Z = ZCORN[(ulong)(Z * NX * NY * 8 + Y * NX * 4 + NX * NY * 4 + 2 * X + NX * 2 + 0)];
             CELL.BSE.Z = ZCORN[(ulong)(Z * NX * NY * 8 + Y * NX * 4 + NX * NY * 4 + 2 * X + NX * 2 + 1)];
+
 
             // Направляющая линия от TNW до BNW
 

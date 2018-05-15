@@ -10,128 +10,85 @@ namespace She
 {
     public partial class MainForm : Form
     {
-        Camera camera = new Camera();
         MainFormView view = new MainFormView();
-
-        ECLStructure.Colorizer Colorizer = new ECLStructure.Colorizer();
+        Engine3D engine = new Engine3D();
 
         public MainForm()
         {
             InitializeComponent();
-
-            IsMidDrag = false;
-            IsLeftDrag = false;
-            IsRightDrag = false;
-
-            glControl1.MouseWheel += GlControl1_MouseWheel;
+            glControl.MouseWheel += GlControlOnMouseWheel;
         }
 
-        private void GlControl1_MouseWheel(object sender, MouseEventArgs e)
+        private void GlControlOnMouseWheel(object sender, MouseEventArgs e)
         {
-            camera.Zoom(e.Delta);
-            UpdateModelView();
-            GlControl1Paint(null, null);
+            engine.MouseWheel(e);
+            GlControlPaint(null, null);
         }
 
+        private void openModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                view.OpenNewModel(fileDialog.FileName);
+
+                boxRestartDate.Items.Clear();
+                boxRestartDate.Items.AddRange(view.RestartDates.ToArray());
+
+                treeProperties.Nodes[0].Nodes.Clear();
+                for (int iw = 0; iw < view.StaticProperties.Count; ++iw)
+                    treeProperties.Nodes[0].Nodes.Add(view.StaticProperties[iw]);
+
+                engine.GenerateGraphics(view.ecl);
+            }
+        }
+
+        private void GlControlPaint(object sender, PaintEventArgs e)
+        {
+            engine.Paint();
+            glControl.SwapBuffers();
+
+            Text = engine.ElementCount.ToString();
+        }
+
+        private void GlControlResize(object sender, EventArgs e)
+        {
+            engine.Resize(glControl.Width, glControl.Height);
+            GlControlPaint(null, null);
+        }
+
+        private void GlControlOnMouseMove(object sender, MouseEventArgs e)
+        {
+            engine.MouseMove(e);
+            GlControlPaint(null, null);
+        }
+
+        private void GlControlLoad(object sender, EventArgs e)
+        {
+            engine.Load();
+            GlControlResize(null, null);
+            GlControlPaint(null, null);
+        }
+
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            engine.UnLoad();
+        }
+
+        private void treeProperties_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Parent.Index == 0) // Static 
+            {
+                view.SetStaticProperty(e.Node.Text);
+                //engine.GenerateGraphics()
+            }
+        }
+
+        /*
         void GlControl1Paint(object sender, PaintEventArgs e)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.PointSize(4);
-            GL.Begin(PrimitiveType.Points);
-            GL.Color3(Color.Black);
-            GL.Vertex3(camera.Target);
-
-            GL.Color3(Color.Green);
-            GL.Vertex3(0, 0, 0);
-            GL.End();
-
-            GL.PushMatrix();
-
-            GL.Scale(camera.Scale, camera.Scale, camera.Scale * 6);
-            GL.Translate(-XC, -YC , -ZC );
-
             if (view.ecl == null)
             {
-                GL.Begin(PrimitiveType.Quads);
-                GL.Color3(Color.Green);
-                GL.Vertex3(1.0, 1.0, -1.0);
-                GL.Vertex3(-1.0, 1.0, -1.0);
-                GL.Vertex3(-1.0, 1.0, 1.0);
-                GL.Vertex3(1.0, 1.0, 1.0);
-
-                GL.Color3(1.0, 0.5, 0.0);
-
-                GL.Vertex3(1.0, -1.0, 1.0);
-                GL.Vertex3(-1.0, -1.0, 1.0);
-                GL.Vertex3(-1.0, -1.0, -1.0);
-                GL.Vertex3(1.0, -1.0, -1.0);
-
-                GL.Color3(1.0, 0.0, 0.0);
-                GL.Vertex3(1.0, 1.0, 1.0);
-                GL.Vertex3(-1.0, 1.0, 1.0);
-                GL.Vertex3(-1.0, -1.0, 1.0);
-                GL.Vertex3(1.0, -1.0, 1.0);
-
-                GL.Color3(1.0, 1.0, 0.0);
-                GL.Vertex3(1.0, -1.0, -1.0);
-                GL.Vertex3(-1.0, -1.0, -1.0);
-                GL.Vertex3(-1.0, 1.0, -1.0);
-                GL.Vertex3(1.0, 1.0, -1.0);
-
-                GL.Color3(0.0, 0.0, 1.0);
-                GL.Vertex3(-1.0, 1.0, 1.0);
-                GL.Vertex3(-1.0, 1.0, -1.0);
-                GL.Vertex3(-1.0, -1.0, -1.0);
-                GL.Vertex3(-1.0, -1.0, 1.0);
-
-                GL.Color3(1.0, 0.0, 1.0);
-                GL.Vertex3(1.0, 1.0, -1.0);
-                GL.Vertex3(1.0, 1.0, 1.0);
-                GL.Vertex3(1.0, -1.0, 1.0);
-                GL.Vertex3(1.0, -1.0, -1.0);
-
-                GL.End();
-
-                GL.Begin(PrimitiveType.Quads);
-                GL.Color3(Color.Green);
-                GL.Vertex3(1.0, 1.0, 2.0);
-                GL.Vertex3(-1.0, 1.0, 2.0);
-                GL.Vertex3(-1.0, 1.0, 3.0);
-                GL.Vertex3(1.0, 1.0, 3.0);
-
-                GL.Color3(1.0, 0.5, 0.0);
-
-                GL.Vertex3(1.0, -1.0, 3.0);
-                GL.Vertex3(-1.0, -1.0, 3.0);
-                GL.Vertex3(-1.0, -1.0, 2.0);
-                GL.Vertex3(1.0, -1.0, 2.0);
-
-                GL.Color3(1.0, 0.0, 0.0);
-                GL.Vertex3(1.0, 1.0, 3.0);
-                GL.Vertex3(-1.0, 1.0, 3.0);
-                GL.Vertex3(-1.0, -1.0, 3.0);
-                GL.Vertex3(1.0, -1.0, 3.0);
-
-                GL.Color3(1.0, 1.0, 0.0);
-                GL.Vertex3(1.0, -1.0, 2.0);
-                GL.Vertex3(-1.0, -1.0, 2.0);
-                GL.Vertex3(-1.0, 1.0, 2.0);
-                GL.Vertex3(1.0, 1.0, 2.0);
-
-                GL.Color3(0.0, 0.0, 1.0);
-                GL.Vertex3(-1.0, 1.0, 3.0);
-                GL.Vertex3(-1.0, 1.0, 2.0);
-                GL.Vertex3(-1.0, -1.0, 2.0);
-                GL.Vertex3(-1.0, -1.0, 3.0);
-
-                GL.Color3(1.0, 0.0, 1.0);
-                GL.Vertex3(1.0, 1.0, 2.0);
-                GL.Vertex3(1.0, 1.0, 3.0);
-                GL.Vertex3(1.0, -1.0, 3.0);
-                GL.Vertex3(1.0, -1.0, 2.0);
-
-                GL.End();
             }
             else
             {
@@ -200,329 +157,8 @@ namespace She
             }
 
             GL.PopMatrix();
-            glControl1.SwapBuffers();
+            glControl.SwapBuffers();
         }
-
-        int VBO, EBO;
-        void GlControl1Load(object sender, EventArgs e)
-        {
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.PolygonOffsetFill);
-            GL.Enable(EnableCap.CullFace);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.ClearColor(Color.White);
-
-            GL.EnableClientState(ArrayCap.VertexArray);
-            GL.EnableClientState(ArrayCap.ColorArray);
-
-            VBO = GL.GenBuffer();
-            EBO = GL.GenBuffer();
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-
-            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
-            GlControl1Resize(null, null);
-        }
-
-        Matrix4 modelview = new Matrix4();
-
-        void GlControl1Resize(object sender, EventArgs e)
-        {
-            float aspect = (float)glControl1.Width / (float)glControl1.Height;
-            GL.Viewport(0, 0, glControl1.Width, glControl1.Height);
-
-            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, aspect, 0.1f, 1000f);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref projection);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            UpdateModelView();
-        }
-
-        void UpdateModelView()
-        {
-            modelview = Matrix4.LookAt(camera.Position, camera.Target , camera.UpDirection);
-            GL.LoadMatrix(ref modelview);
-        }
-
-        Vector3 m_start_vector = new Vector3();
-        Vector3 m_end_vector = new Vector3();
-        Vector3 m_delta_vector = new Vector3();
-
-        bool IsLeftDrag = false;
-        bool IsMidDrag = false;
-        bool IsRightDrag = false;
-
-        void GlControl1MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Middle)
-            {
-                if (!IsMidDrag) // begin panning
-                {
-                    m_start_vector = new Vector3(e.X, e.Y, 0f);
-                    IsMidDrag = true;
-                }
-                else // ...continue panning
-                {
-                    m_end_vector = new Vector3(e.X, e.Y, 0f);
-                    m_delta_vector = m_end_vector - m_start_vector;
-
-                    camera.Pan(m_delta_vector.X, m_delta_vector.Y);
-                    UpdateModelView();
-
-                    GlControl1Paint(null, null);
-
-                    m_start_vector = m_end_vector;
-                }
-            }
-            else
-            {
-                if (IsMidDrag) // ...end panning
-                {
-                    IsMidDrag = false;
-                    UpdateModelView();
-                    GlControl1Paint(null, null);
-                }
-            }
-
-            if (e.Button == MouseButtons.Right)
-            {
-                if (!IsRightDrag) // begin rotation
-                {
-                    m_start_vector = new Vector3(e.X, e.Y, 0f);
-                    IsRightDrag = true;
-                }
-                else  // ...continue rotation
-                {
-                    m_end_vector = new Vector3(e.X, e.Y, 0f);
-                    m_delta_vector = m_end_vector - m_start_vector;
-
-                    camera.Rotate(m_delta_vector.X, m_delta_vector.Y);
-                    UpdateModelView();
-
-                    GlControl1Paint(null, null);
-                    m_start_vector = m_end_vector;
-                }
-            }
-            else
-            {
-                if (IsRightDrag)  //.. end rotation
-                {
-                    IsRightDrag = false;
-                    UpdateModelView();
-                    GlControl1Paint(null, null);
-                }
-            }
-        }
-
-        private void openModelToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (fileDialog.ShowDialog() == DialogResult.OK)
-            {
-                view.OpenNewModel(fileDialog.FileName);
-                GenerateGraphics();
-            }
-        }
-
-        int ElementCount;
-
-        void Render(bool grid_mode)
-        {
-            Colorizer.SetMinimum(77);
-            Colorizer.SetMaximum(106);
-        }
-
-        float XC, YC, ZC;
-
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            GL.DeleteBuffer(VBO);
-            GL.DeleteBuffer(EBO);
-        }
-
-        void GenerateGraphics()
-        {
-            view.ecl.ReadRestart(0);
-            view.ecl.RESTART.ReadRestartGrid("PRESSURE");
-
-            // Центрирование 
-
-            XC = (view.ecl.EGRID.XMINCOORD + view.ecl.EGRID.XMAXCOORD) * 0.5f;
-            YC = (view.ecl.EGRID.YMINCOORD + view.ecl.EGRID.YMAXCOORD) * 0.5f;
-            ZC = (view.ecl.EGRID.ZMINCOORD + view.ecl.EGRID.ZMAXCOORD) * 0.5f;
-
-            camera.Scale = 0.004f;
-
-            Colorizer.SetMinimum(77);
-            Colorizer.SetMaximum(106);
-
-            // 
-            GL.BufferData(
-                BufferTarget.ArrayBuffer,
-                (IntPtr)(view.ecl.INIT.NACTIV * sizeof(float) * 3 * 8 + view.ecl.INIT.NACTIV * sizeof(byte) * 3 * 8), // Три координаты по float, 8 вершин и 
-                IntPtr.Zero,
-                BufferUsageHint.StaticDraw);
-
-            IntPtr VertexPtr = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
-
-            GL.BufferData(
-                BufferTarget.ElementArrayBuffer,
-                (IntPtr)(view.ecl.INIT.NACTIV * sizeof(float) * 3 * 24),
-                IntPtr.Zero,
-                BufferUsageHint.StaticDraw);
-
-            IntPtr ElementPtr = GL.MapBuffer(BufferTarget.ElementArrayBuffer, BufferAccess.ReadWrite);
-
-            GL.VertexPointer(3, VertexPointerType.Float, 0, 0);
-            GL.ColorPointer(3, ColorPointerType.UnsignedByte, 0, view.ecl.INIT.NACTIV * sizeof(float) * 3 * 8);
-
-
-            ECLStructure.Cell CELL;
-
-            int index = 0;
-            float value = 0;
-            int count = 0;
-            int cell_index = 0;
-            Color color;
-            
-            unsafe
-            {
-                float* vertex_mem = (float*)VertexPtr;
-                int* index_mem = (int*)ElementPtr;
-                byte* color_mem = (byte*)(VertexPtr + view.ecl.INIT.NACTIV * sizeof(float) * 3 * 8);
-
-                for (int Z = 0; Z < view.ecl.INIT.NZ; ++Z)
-                {
-                    for (int Y = 0; Y < view.ecl.INIT.NY; ++Y)
-                    {
-                        for (int X = 0; X < view.ecl.INIT.NX; ++X)
-                        {
-                            cell_index = view.ecl.INIT.GetActive(X, Y, Z);
-
-                            if (cell_index > 0) // active only
-                            {
-                                CELL = view.ecl.EGRID.GetCell(X, Y, Z);
-                                value = view.ecl.RESTART.GetValue(cell_index - 1);
-                                color = Colorizer.ColorByValue(value);
-
-                                index_mem[count+0] = index+0;
-                                index_mem[count+1] = index+1;
-                                index_mem[count+2] = index+2;
-                                index_mem[count+3] = index+3;
-                                index_mem[count+4] = index+0;
-                                index_mem[count+5] = index+4;
-                                index_mem[count+6] = index+5;
-                                index_mem[count+7] = index+1;
-                                index_mem[count+8] = index+5;
-                                index_mem[count+9] = index+4;
-                                index_mem[count+10] = index+7;
-                                index_mem[count+11] = index+6;
-                                index_mem[count+12] = index+5;
-                                index_mem[count+13] = index+6;
-                                index_mem[count+14] = index+2;
-                                index_mem[count+15] = index+1;
-                                index_mem[count+16] = index+6;
-                                index_mem[count+17] = index+7;
-                                index_mem[count+18] = index+3;
-                                index_mem[count+19] = index+2;
-                                index_mem[count+20] = index+0;
-                                index_mem[count+21] = index+3;
-                                index_mem[count+22] = index+7;
-                                index_mem[count+23] = index+4;
-
-                                count = count + 24;
-
-                                vertex_mem[index * 3 + 0] = CELL.TNW.X;
-                                vertex_mem[index * 3 + 1] = CELL.TNW.Y;
-                                vertex_mem[index * 3 + 2] = CELL.TNW.Z;
-
-                                color_mem[index * 3 + 0] = color.R;
-                                color_mem[index * 3 + 1] = color.G;
-                                color_mem[index * 3 + 2] = color.B;
-
-                                index++;
-
-                                vertex_mem[index * 3 + 0] = CELL.TSW.X;
-                                vertex_mem[index * 3 + 1] = CELL.TSW.Y;
-                                vertex_mem[index * 3 + 2] = CELL.TSW.Z;
-
-                                color_mem[index * 3 + 0] = color.R;
-                                color_mem[index * 3 + 1] = color.G;
-                                color_mem[index * 3 + 2] = color.B;
-
-                                index++;
-
-                                vertex_mem[index * 3 + 0] = CELL.TSE.X;
-                                vertex_mem[index * 3 + 1] = CELL.TSE.Y;
-                                vertex_mem[index * 3 + 2] = CELL.TSE.Z;
-
-                                color_mem[index * 3 + 0] = color.R;
-                                color_mem[index * 3 + 1] = color.G;
-                                color_mem[index * 3 + 2] = color.B;
-
-                                index++;
-
-                                vertex_mem[index * 3 + 0] = CELL.TNE.X;
-                                vertex_mem[index * 3 + 1] = CELL.TNE.Y;
-                                vertex_mem[index * 3 + 2] = CELL.TNE.Z;
-
-                                color_mem[index * 3 + 0] = color.R;
-                                color_mem[index * 3 + 1] = color.G;
-                                color_mem[index * 3 + 2] = color.B;
-
-                                index++;
-
-                                vertex_mem[index * 3 + 0] = CELL.BNW.X;
-                                vertex_mem[index * 3 + 1] = CELL.BNW.Y;
-                                vertex_mem[index * 3 + 2] = CELL.BNW.Z;
-
-                                color_mem[index * 3 + 0] = color.R;
-                                color_mem[index * 3 + 1] = color.G;
-                                color_mem[index * 3 + 2] = color.B;
-
-                                index++;
-
-                                vertex_mem[index * 3 + 0] = CELL.BSW.X;
-                                vertex_mem[index * 3 + 1] = CELL.BSW.Y;
-                                vertex_mem[index * 3 + 2] = CELL.BSW.Z;
-
-                                color_mem[index * 3 + 0] = color.R;
-                                color_mem[index * 3 + 1] = color.G;
-                                color_mem[index * 3 + 2] = color.B;
-
-                                index++;
-
-                                vertex_mem[index * 3 + 0] = CELL.BSE.X;
-                                vertex_mem[index * 3 + 1] = CELL.BSE.Y;
-                                vertex_mem[index * 3 + 2] = CELL.BSE.Z;
-
-                                color_mem[index * 3 + 0] = color.R;
-                                color_mem[index * 3 + 1] = color.G;
-                                color_mem[index * 3 + 2] = color.B;
-
-                                index++;
-
-                                vertex_mem[index * 3 + 0] = CELL.BNE.X;
-                                vertex_mem[index * 3 + 1] = CELL.BNE.Y;
-                                vertex_mem[index * 3 + 2] = CELL.BNE.Z;
-
-                                color_mem[index * 3 + 0] = color.R;
-                                color_mem[index * 3 + 1] = color.G;
-                                color_mem[index * 3 + 2] = color.B;
-
-                                index++;
-                                //
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            ElementCount = count;
-            GL.UnmapBuffer(BufferTarget.ArrayBuffer);
-            GL.UnmapBuffer(BufferTarget.ElementArrayBuffer);
-        }
-   }
+        */
+    }
 }

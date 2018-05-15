@@ -112,6 +112,7 @@
     <Compile Include="ECLStructure\INSPEC.cs" />
     <Compile Include="ECLStructure\RSSPEC.cs" />
     <Compile Include="ECLStructure\SMSPEC.cs" />
+    <Compile Include="Engine3D.cs" />
     <Compile Include="MainFormView.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
