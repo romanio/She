@@ -21,6 +21,7 @@ namespace She
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.PolygonOffsetFill);
             GL.Enable(EnableCap.CullFace);
+            GL.FrontFace(FrontFaceDirection.Cw);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(Color.White);
@@ -141,7 +142,7 @@ namespace She
 
             GL.PushMatrix();
 
-            GL.Scale(camera.Scale, camera.Scale, camera.Scale * 6);
+            GL.Scale(camera.Scale, camera.Scale, camera.Scale * 24);
             GL.Translate(-XC, -YC, -ZC);
 
             if (IsLoaded)
@@ -260,6 +261,7 @@ namespace She
             GL.Color3(Color.Black);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.DrawElements(PrimitiveType.Quads, ElementCount, DrawElementsType.UnsignedInt, 0);
+  
         }
 
 
@@ -311,9 +313,13 @@ namespace She
             int count = 0;
             int cell_index = 0;
             Color color;
+
             bool skip_right_face = false;
             bool skip_front_face = false;
             bool skip_bottom_face = false;
+            bool skip_left_face = false;
+            bool skip_top_face = false;
+            bool skip_back_face = false;
 
             unsafe
             {
@@ -335,7 +341,6 @@ namespace She
 
                                 value = ecl.RESTART.GetValue(cell_index - 1);
                                 color = Colorizer.ColorByValue(value);
-
 
                                 // Check next X-neightbore
 
@@ -400,14 +405,83 @@ namespace She
                                     }
                                 }
 
+                                // Check prev X-neightbore
+
+                                skip_left_face = false;
+
+                                if (X > 1)
+                                {
+                                    cell_index = ecl.INIT.GetActive(X - 1, Y, Z);
+                                    if (cell_index > 0)
+                                    {
+                            
+                                        var NCELL = ecl.EGRID.GetCell(X - 1, Y, Z);
+
+                                        if ((CELL.TNW == NCELL.TNE) &&
+                                            (CELL.TSW == NCELL.TSE) &&
+                                            (CELL.BNW == NCELL.BNE) &&
+                                            (CELL.BSW == NCELL.BSE)) 
+                                        {
+                                            skip_left_face = true;
+                                        }
+                                    }
+                                }
+
+                                // Check prev Y-neightbore
+
+                                skip_back_face = false;
+
+                                if (Y > 1)
+                                {
+                                    cell_index = ecl.INIT.GetActive(X, Y - 1, Z);
+                                    if (cell_index > 0)
+                                    {
+                                        var NCELL = ecl.EGRID.GetCell(X, Y - 1, Z);
+
+                                        if ((CELL.TNW == NCELL.TSW) &&
+                                            (CELL.TNE == NCELL.TSE) &&
+                                            (CELL.BNW == NCELL.BSW) &&
+                                            (CELL.BNE == NCELL.BSE))
+                                        {
+                                            skip_back_face = true;
+                                        }
+                                    }
+                                }
+
+                                // Check prev Z-neightbore
+
+                                skip_top_face = false;
+
+                                if (Z > 1)
+                                {
+                                    cell_index = ecl.INIT.GetActive(X, Y, Z - 1);
+                                    if (cell_index > 0)
+                                    {
+                                        var NCELL = ecl.EGRID.GetCell(X, Y, Z - 1);
+
+                                        if ((CELL.TNW == NCELL.BNW) &&
+                                            (CELL.TNE == NCELL.BNE) &&
+                                            (CELL.TSW == NCELL.BSW) &&
+                                            (CELL.TSE == NCELL.BSE))
+                                        {
+                                            skip_top_face = true;
+                                        }
+                                    }
+                                }
+
                                 int pos = 0;
 
-                                index_mem[count + (pos++)] = index + 0;
-                                index_mem[count + (pos++)] = index + 1;
-                                index_mem[count + (pos++)] = index + 2;
-                                index_mem[count + (pos++)] = index + 3;
+                                // top face 
 
-                                // bootom face
+                                if (skip_top_face)
+                                {
+                                    index_mem[count + (pos++)] = index + 0;
+                                    index_mem[count + (pos++)] = index + 1;
+                                    index_mem[count + (pos++)] = index + 2;
+                                    index_mem[count + (pos++)] = index + 3;
+                                }
+
+                                // bottom face
 
                                 if (!skip_bottom_face)
                                 {
@@ -417,10 +491,15 @@ namespace She
                                     index_mem[count + (pos++)] = index + 6;
                                 }
 
-                                index_mem[count + (pos++)] = index + 0;
-                                index_mem[count + (pos++)] = index + 4;
-                                index_mem[count + (pos++)] = index + 5;
-                                index_mem[count + (pos++)] = index + 1;
+                                // left face TNW(0) TSW(1) BNW(4) BSW(5)
+
+                                if (!skip_left_face)
+                                {
+                                    index_mem[count + (pos++)] = index + 0;
+                                    index_mem[count + (pos++)] = index + 4;
+                                    index_mem[count + (pos++)] = index + 5;
+                                    index_mem[count + (pos++)] = index + 1;
+                                }
 
                                 // front face
 
@@ -442,10 +521,15 @@ namespace She
                                     index_mem[count + (pos++)] = index + 2;
                                 }
 
-                                index_mem[count + (pos++)] = index + 0;
-                                index_mem[count + (pos++)] = index + 3;
-                                index_mem[count + (pos++)] = index + 7;
-                                index_mem[count + (pos++)] = index + 4;
+                                // back face TNW(0) TNE(3) BNW(4) BNE(7)
+
+                                if (!skip_back_face)
+                                {
+                                    index_mem[count + (pos++)] = index + 0;
+                                    index_mem[count + (pos++)] = index + 3;
+                                    index_mem[count + (pos++)] = index + 7;
+                                    index_mem[count + (pos++)] = index + 4;
+                                }
 
                                 count = count + pos;
 
