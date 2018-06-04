@@ -89,6 +89,15 @@ namespace She.ECLStructure
                 }
             }
 
+            if (!FILES.ContainsKey("EGRID")) // Если EGRID используется как входной массив, часто имя не совпадает с коренным именем
+            {
+                var fd = new System.Windows.Forms.OpenFileDialog() { Filter = "Eclipse EGRID file|*.EGRID" };
+                if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    FILES.Add("EGRID", fd.FileName);
+                }
+            }
+
             if (FILES.ContainsKey("EGRID"))
             {
                 System.Diagnostics.Debug.WriteLine("Read EGRID " + FILES["EGRID"]);

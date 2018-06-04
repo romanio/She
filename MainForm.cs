@@ -34,6 +34,8 @@ namespace She
                 boxRestartDate.Items.Clear();
                 boxRestartDate.Items.AddRange(view.RestartDates.ToArray());
 
+                // Получить имена статики
+
                 treeProperties.Nodes[0].Nodes.Clear();
                 for (int iw = 0; iw < view.StaticProperties.Count; ++iw)
                     treeProperties.Nodes[0].Nodes.Add(view.StaticProperties[iw]);
@@ -82,6 +84,13 @@ namespace She
                 view.SetStaticProperty(e.Node.Text);
                 //engine.GenerateGraphics()
             }
+        }
+
+        private void boxRestartDate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (boxRestartDate.SelectedIndex == -1) return;
+
+            view.ecl.ReadRestart(boxRestartDate.SelectedIndex);
         }
 
         /*

@@ -21,7 +21,7 @@ namespace She
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.PolygonOffsetFill);
             GL.Enable(EnableCap.CullFace);
-            GL.FrontFace(FrontFaceDirection.Cw);
+           // GL.FrontFace(FrontFaceDirection.Cw);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(Color.White);
@@ -261,7 +261,6 @@ namespace She
             GL.Color3(Color.Black);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.DrawElements(PrimitiveType.Quads, ElementCount, DrawElementsType.UnsignedInt, 0);
-  
         }
 
 
@@ -288,19 +287,20 @@ namespace She
             // 
             GL.BufferData(
                 BufferTarget.ArrayBuffer,
-                (IntPtr)(ecl.INIT.NACTIV * sizeof(float) * 3 * 8 + ecl.INIT.NACTIV * sizeof(byte) * 3 * 8), // Три координаты по float, 8 вершин и 
+                (IntPtr)((ulong)ecl.INIT.NACTIV * sizeof(float) * 3 * 8 + (ulong)ecl.INIT.NACTIV * sizeof(byte) * 3 * 8), // Три координаты по float, 8 вершин и 
                 IntPtr.Zero,
                 BufferUsageHint.StaticDraw);
 
-            IntPtr VertexPtr = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
+            IntPtr VertexPtr = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.WriteOnly);
 
             GL.BufferData(
                 BufferTarget.ElementArrayBuffer,
-                (IntPtr)(ecl.INIT.NACTIV * sizeof(float) * 3 * 24),
+                (IntPtr)((ulong)ecl.INIT.NACTIV * sizeof(float) * 3 * 24),
                 IntPtr.Zero,
                 BufferUsageHint.StaticDraw);
 
-            IntPtr ElementPtr = GL.MapBuffer(BufferTarget.ElementArrayBuffer, BufferAccess.ReadWrite);
+            System.Diagnostics.Debug.WriteLine(GL.GetError().ToString());
+            IntPtr ElementPtr = GL.MapBuffer(BufferTarget.ElementArrayBuffer, BufferAccess.WriteOnly);
 
             GL.VertexPointer(3, VertexPointerType.Float, 0, 0);
             GL.ColorPointer(3, ColorPointerType.UnsignedByte, 0, ecl.INIT.NACTIV * sizeof(float) * 3 * 8);

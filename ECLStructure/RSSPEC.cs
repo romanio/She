@@ -167,9 +167,9 @@ namespace She.ECLStructure
             Action<string> SetPosition = (name) =>
             {
                 int index = Array.IndexOf(NAME[step], name);
-                long pointer = POINTER[step][index];
-                long pointerb = POINTERB[step][index];
-                br.SetPosition(pointerb * 2147483648 + pointer);
+                    long pointer = POINTER[step][index];
+                    long pointerb = POINTERB[step][index];
+                    br.SetPosition(pointerb * 2147483648 + pointer);
             };
 
 
@@ -194,70 +194,74 @@ namespace She.ECLStructure
             NSCONZ = INTH[33];
             NXCONZ = INTH[34];
 
-            SetPosition("IWEL");
-            br.ReadHeader();
-            int[] IWEL = br.ReadIntList();
-
-            for (int iw = 0; iw < NWELLS; ++iw)
+            if (Array.IndexOf(NAME[step], "IWEL") != -1)
             {
-                WELLS.Add(new WELLDATA
+
+                SetPosition("IWEL");
+                br.ReadHeader();
+                int[] IWEL = br.ReadIntList();
+
+                for (int iw = 0; iw < NWELLS; ++iw)
                 {
-                    I = IWEL[iw * NIWELZ + 0],
-                    J = IWEL[iw * NIWELZ + 1],
-                    K = IWEL[iw * NIWELZ + 2],
-                    COMPLNUM = IWEL[iw * NIWELZ + 4],
-                    GROUPNUM = IWEL[iw * NIWELZ + 5],
-                    WELLTYPE = IWEL[iw * NIWELZ + 6],
-                    WELLSTATUS = IWEL[iw * NIWELZ + 10]
-                });
-            }
+                    WELLS.Add(new WELLDATA
+                    {
+                        I = IWEL[iw * NIWELZ + 0],
+                        J = IWEL[iw * NIWELZ + 1],
+                        K = IWEL[iw * NIWELZ + 2],
+                        COMPLNUM = IWEL[iw * NIWELZ + 4],
+                        GROUPNUM = IWEL[iw * NIWELZ + 5],
+                        WELLTYPE = IWEL[iw * NIWELZ + 6],
+                        WELLSTATUS = IWEL[iw * NIWELZ + 10]
+                    });
+                }
 
-            SetPosition("SWEL");
-            br.ReadHeader();
+                SetPosition("SWEL");
+                br.ReadHeader();
 
-            float[] SWEL = br.ReadFloatList(br.header.count);
+                float[] SWEL = br.ReadFloatList(br.header.count);
 
-            for (int iw = 0; iw < NWELLS; ++iw)
-            {
-                WELLS[iw].WOPRH = SWEL[0];
-                WELLS[iw].WWPRH = SWEL[1];
-                WELLS[iw].WGPRH = SWEL[2];
-                WELLS[iw].WLPRH = SWEL[3];
-                WELLS[iw].REF_DEPTH = SWEL[9];
-                WELLS[iw].WEFA = SWEL[24];
-                WELLS[iw].BHPH = SWEL[68];
-            }
+                for (int iw = 0; iw < NWELLS; ++iw)
+                {
+                    WELLS[iw].WOPRH = SWEL[0];
+                    WELLS[iw].WWPRH = SWEL[1];
+                    WELLS[iw].WGPRH = SWEL[2];
+                    WELLS[iw].WLPRH = SWEL[3];
+                    WELLS[iw].REF_DEPTH = SWEL[9];
+                    WELLS[iw].WEFA = SWEL[24];
+                    WELLS[iw].BHPH = SWEL[68];
+                }
 
-            SetPosition("XWEL");
-            br.ReadHeader();
+                SetPosition("XWEL");
+                br.ReadHeader();
 
-            double[] XWEL = br.ReadDoubleList();
+                double[] XWEL = br.ReadDoubleList();
 
-            for (int iw = 0; iw < NWELLS; ++iw)
-            {
-                WELLS[iw].WOPR = XWEL[0];
-                WELLS[iw].WWPR = XWEL[1];
-                WELLS[iw].WLPR = XWEL[3];
-                WELLS[iw].WBHP = XWEL[6];
-                WELLS[iw].WWCT = XWEL[7];
-                WELLS[iw].WOPT = XWEL[18];
-                WELLS[iw].WWPT = XWEL[19];
-                WELLS[iw].WWIT = XWEL[23];
-                WELLS[iw].WPI = XWEL[55];
-                WELLS[iw].WOPTH = XWEL[75];
-                WELLS[iw].WWPTH = XWEL[76];
-                WELLS[iw].WWITH = XWEL[81];
-                WELLS[iw].WOPTH = XWEL[75];
-            }
+                for (int iw = 0; iw < NWELLS; ++iw)
+                {
+                    WELLS[iw].WOPR = XWEL[0];
+                    WELLS[iw].WWPR = XWEL[1];
+                    WELLS[iw].WLPR = XWEL[3];
+                    WELLS[iw].WBHP = XWEL[6];
+                    WELLS[iw].WWCT = XWEL[7];
+                    WELLS[iw].WOPT = XWEL[18];
+                    WELLS[iw].WWPT = XWEL[19];
+                    WELLS[iw].WWIT = XWEL[23];
+                    WELLS[iw].WPI = XWEL[55];
+                    WELLS[iw].WOPTH = XWEL[75];
+                    WELLS[iw].WWPTH = XWEL[76];
+                    WELLS[iw].WWITH = XWEL[81];
+                    WELLS[iw].WOPTH = XWEL[75];
+                }
 
-            SetPosition("ZWEL");
-            br.ReadHeader();
+                SetPosition("ZWEL");
+                br.ReadHeader();
 
-            string[] ZWEL = br.ReadStringList();
+                string[] ZWEL = br.ReadStringList();
 
-            for (int iw = 0; iw < NWELLS; ++iw)
-            {
-                WELLS[iw].WELLNAME = ZWEL[iw * NZWELZ + 0];
+                for (int iw = 0; iw < NWELLS; ++iw)
+                {
+                    WELLS[iw].WELLNAME = ZWEL[iw * NZWELZ + 0];
+                }
             }
             br.CloseBinaryFile();
         }

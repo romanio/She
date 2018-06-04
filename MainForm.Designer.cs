@@ -120,6 +120,7 @@
             this.boxRestartDate.Name = "boxRestartDate";
             this.boxRestartDate.Size = new System.Drawing.Size(121, 21);
             this.boxRestartDate.TabIndex = 5;
+            this.boxRestartDate.SelectedIndexChanged += new System.EventHandler(this.boxRestartDate_SelectedIndexChanged);
             // 
             // label2
             // 
