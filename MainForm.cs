@@ -90,7 +90,15 @@ namespace She
         {
             if (boxRestartDate.SelectedIndex == -1) return;
 
-            view.ecl.ReadRestart(boxRestartDate.SelectedIndex);
+            view.ReadRestartFile(boxRestartDate.SelectedIndex);
+
+            // Получить динамические имена свойств
+
+            treeProperties.Nodes[1].Nodes.Clear();
+            for (int iw = 0; iw < view.DynamicProperties.Count; ++iw)
+                treeProperties.Nodes[1].Nodes.Add(view.DynamicProperties[iw]);
+
+            engine.GenerateGraphics(view.ecl);
         }
 
         /*

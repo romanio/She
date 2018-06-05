@@ -245,6 +245,10 @@ namespace She
 
         public void Render()
         {
+            // Отрисовка скважин
+
+            WellRender();
+           
             // Отрисовка ячеек
 
             GL.PolygonOffset(+1, +1);
@@ -266,11 +270,52 @@ namespace She
 
         bool IsLoaded = false;
 
+        void WellRender()
+        {
+            if (IsLoaded == false) return;
+
+            ECLStructure.Cell CELL;
+
+            for (int iw = 0; iw < ecl_ref.RESTART.NWELLS; ++iw)
+            {
+                for (int ic = 0; ic < ecl_ref.RESTART.NCWMAX; ++ic)
+                {
+                    // Если перфорация активная
+                    int cell_active = ecl_ref.RESTART.ICON[iw * ecl_ref.RESTART.NICONZ * ecl_ref.RESTART.NCWMAX + ic * ecl_ref.RESTART.NICONZ + 0];
+                    int cell_X = ecl_ref.RESTART.ICON[iw * ecl_ref.RESTART.NICONZ * ecl_ref.RESTART.NCWMAX + ic * ecl_ref.RESTART.NICONZ + 1];
+                    int cell_Y = ecl_ref.RESTART.ICON[iw * ecl_ref.RESTART.NICONZ * ecl_ref.RESTART.NCWMAX + ic * ecl_ref.RESTART.NICONZ + 2];
+                    int cell_Z = ecl_ref.RESTART.ICON[iw * ecl_ref.RESTART.NICONZ * ecl_ref.RESTART.NCWMAX + ic * ecl_ref.RESTART.NICONZ + 3];
+
+                    if (cell_active != 0)
+                    {
+                        CELL = ecl_ref.EGRID.GetCell(cell_X, cell_Y, cell_Z);
+
+                        GL.LineWidth(3);
+
+                        GL.Begin(PrimitiveType.Lines);
+                        GL.Color3(Color.Red);
+                        GL.Vertex3((CELL.TNE.X + CELL.BSW.X) * 0.5, (CELL.TNE.Y + CELL.BSW.Y) * 0.5, ecl_ref.EGRID.ZMAXCOORD);
+
+                        GL.Vertex3((CELL.TNE.X + CELL.BSW.X) * 0.5, (CELL.TNE.Y + CELL.BSW.Y) * 0.5, (CELL.TNE.Z + CELL.BSW.Z) * 0.5);
+
+                        GL.End();
+
+                        continue;
+                    }
+                }
+            }
+            GL.LineWidth(1);
+        }
+
+        ECLStructure.ECL ecl_ref = null;
+
         public void GenerateGraphics(ECLStructure.ECL ecl)
         {
             IsLoaded = true;
 
-            ecl.ReadRestart(0);
+            ecl_ref = ecl;
+
+            ecl.ReadRestart(4);
             ecl.RESTART.ReadRestartGrid("PRESSURE");
 
             // Центрирование 

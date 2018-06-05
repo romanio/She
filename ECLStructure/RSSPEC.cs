@@ -138,6 +138,7 @@ namespace She.ECLStructure
                 br.CloseBinaryFile();
             }
         }
+
         public int NX, NY, NZ; // Размер по X, Y, Z
         public int NACTIV; // Количество активных ячеек
         public int IPHS; // Индикатор фазы
@@ -148,12 +149,14 @@ namespace She.ECLStructure
         public int NXWELZ; // Количество элементов данных в XWEL (double значения)
         public int NZWELZ; // Количество элементов данных в ZWEL (string значения)
         public int NICONZ; // Количество элементов данных в ICON (int значения)
+        public int[] ICON; // Значения из ICON, требуется выше уровнем
         public int NSCONZ; // Количество элементов данных в SCON (float значения)
         public int NXCONZ; // Количество элементов данных в XCON (double значения)
 
         // Разворачивание в человеческий вид содержимое рестарт файла
 
         public List<WELLDATA> WELLS;
+
         public int RESTART_STEP;
         public float[] DATA = null;
 
@@ -167,17 +170,18 @@ namespace She.ECLStructure
             Action<string> SetPosition = (name) =>
             {
                 int index = Array.IndexOf(NAME[step], name);
-                    long pointer = POINTER[step][index];
-                    long pointerb = POINTERB[step][index];
-                    br.SetPosition(pointerb * 2147483648 + pointer);
+                long pointer = POINTER[step][index];
+                long pointerb = POINTERB[step][index];
+                br.SetPosition(pointerb * 2147483648 + pointer);
             };
-
 
             WELLS = new List<WELLDATA>();
 
             br.OpenBinaryFile(filename);
+            
             SetPosition("INTEHEAD");
             br.ReadHeader();
+
             int[] INTH = br.ReadIntList();
             NX = INTH[8];
             NY = INTH[9];
@@ -262,7 +266,12 @@ namespace She.ECLStructure
                 {
                     WELLS[iw].WELLNAME = ZWEL[iw * NZWELZ + 0];
                 }
+
+                SetPosition("ICON");
+                br.ReadHeader();
+                ICON = br.ReadIntList();
             }
+
             br.CloseBinaryFile();
         }
 

@@ -15,10 +15,32 @@ namespace She
         public List<string> RestartDates { get; set; }
         public List<WELLDATA> WellRestart { get; set; }
         public List<string> StaticProperties { get; set; }
+        public List<string> DynamicProperties { get; set; }
+
 
         public void SetStaticProperty(string name)
         {
 
+        }
+
+        public void ReadRestartFile(int istep)
+        {
+            ecl.ReadRestart(istep);
+
+            //
+
+            DynamicProperties = new List<string>();
+
+            for (int iw = 0; iw < ecl.RESTART.NAME.Count; ++iw)
+            {
+                for (int it = 0; it < ecl.RESTART.NAME[iw].Length; ++it)
+                {
+                    if (ecl.RESTART.NUMBER[iw][it] == ecl.INIT.NACTIV)
+                    {
+                        DynamicProperties.Add(ecl.RESTART.NAME[iw][it]);
+                    }
+                }
+            }
         }
 
         public void OpenNewModel(string filename)
@@ -43,18 +65,15 @@ namespace She
                  select item.ToShortDateString()).ToList();
 
             //
+
             StaticProperties = new List<string>();
 
             for (int iw = 0; iw < ecl.INIT.NAME.Count; ++iw)
-            {
                 for (int it = 0; it < ecl.INIT.NAME[iw].Length; ++it)
-                {
                     if (ecl.INIT.NUMBER[iw][it] == ecl.INIT.NACTIV)
                     {
                         StaticProperties.Add(ecl.INIT.NAME[iw][it]);
                     }
-                }
-            }
         }
     }
 }
