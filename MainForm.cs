@@ -15,6 +15,24 @@ namespace She
 
         bool editRestartDates = false;
 
+        public int currentWindow2D_id;
+        public int currentWindow3D_id;
+        public int currentChartForm_id;
+
+        public ModelViewForm modelView;
+        public WindowListForm windowsList;
+
+        public bool windowsListShow = true;
+        public bool modelViewShow = true;
+
+        public List<Form2D> listForm2D;
+        public List<Form3D> listForm3D;
+        public List<ChartForm> listChartForm;
+
+        public string form2Dstring = "Form 2D";
+        public string form3Dstring = "Form 3D";
+        public string chartString = "Chart";
+
         public MainForm()
         {
             InitializeComponent();

@@ -102,6 +102,9 @@
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>dll\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
@@ -122,6 +125,34 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\ChartForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\ChartForm.Designer.cs" />
+    <Compile Include="Source\customFloatWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\customFloatWindowFactory.cs" />
+    <Compile Include="Source\Form2D.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\Form2D.Designer.cs" />
+    <Compile Include="Source\Form3D.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\Form3D.Designer.cs" />
+    <Compile Include="Source\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\MainForm.Designer.cs" />
+    <Compile Include="Source\ModelViewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\ModelViewForm.Designer.cs" />
+    <Compile Include="Source\WindowListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\WindowListForm.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -130,6 +161,12 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Source\ChartForm.resx" />
+    <EmbeddedResource Include="Source\Form2D.resx" />
+    <EmbeddedResource Include="Source\Form3D.resx" />
+    <EmbeddedResource Include="Source\MainForm.resx" />
+    <EmbeddedResource Include="Source\ModelViewForm.resx" />
+    <EmbeddedResource Include="Source\WindowListForm.resx" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -143,8 +180,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Source\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
