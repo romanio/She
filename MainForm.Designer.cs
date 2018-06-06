@@ -54,7 +54,7 @@
             this.glControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.glControl.Location = new System.Drawing.Point(174, 37);
             this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(483, 374);
+            this.glControl.Size = new System.Drawing.Size(600, 483);
             this.glControl.TabIndex = 1;
             this.glControl.VSync = false;
             this.glControl.Load += new System.EventHandler(this.GlControlLoad);
@@ -66,9 +66,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 426);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 535);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(806, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(923, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -86,7 +86,7 @@
             this.openModelToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(806, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(923, 24);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -105,7 +105,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(663, 37);
+            this.label1.Location = new System.Drawing.Point(780, 37);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(68, 13);
             this.label1.TabIndex = 4;
@@ -116,7 +116,7 @@
             this.boxRestartDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.boxRestartDate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.boxRestartDate.FormattingEnabled = true;
-            this.boxRestartDate.Location = new System.Drawing.Point(666, 63);
+            this.boxRestartDate.Location = new System.Drawing.Point(783, 63);
             this.boxRestartDate.Name = "boxRestartDate";
             this.boxRestartDate.Size = new System.Drawing.Size(121, 21);
             this.boxRestartDate.TabIndex = 5;
@@ -152,7 +152,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(806, 448);
+            this.ClientSize = new System.Drawing.Size(923, 557);
             this.Controls.Add(this.treeProperties);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.boxRestartDate);

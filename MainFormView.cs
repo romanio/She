@@ -17,6 +17,24 @@ namespace She
         public List<string> StaticProperties { get; set; }
         public List<string> DynamicProperties { get; set; }
 
+        void GetStaticProperties()
+        {
+            StaticProperties = new List<string>();
+
+            for (int iw = 0; iw < ecl.INIT.NAME.Count; ++iw)
+                for (int it = 0; it < ecl.INIT.NAME[iw].Length; ++it)
+                    if (ecl.INIT.NUMBER[iw][it] == ecl.INIT.NACTIV)
+                        StaticProperties.Add(ecl.INIT.NAME[iw][it]);
+        }
+
+        void GetDinamicProperties(int istep)
+        {
+            DynamicProperties = new List<string>();
+
+                for (int it = 0; it < ecl.RESTART.NAME[istep].Length; ++it)
+                    if (ecl.RESTART.NUMBER[istep][it] == ecl.INIT.NACTIV)
+                        DynamicProperties.Add(ecl.RESTART.NAME[istep][it]);
+        }
 
         public void SetStaticProperty(string name)
         {
@@ -26,21 +44,7 @@ namespace She
         public void ReadRestartFile(int istep)
         {
             ecl.ReadRestart(istep);
-
-            //
-
-            DynamicProperties = new List<string>();
-
-            for (int iw = 0; iw < ecl.RESTART.NAME.Count; ++iw)
-            {
-                for (int it = 0; it < ecl.RESTART.NAME[iw].Length; ++it)
-                {
-                    if (ecl.RESTART.NUMBER[iw][it] == ecl.INIT.NACTIV)
-                    {
-                        DynamicProperties.Add(ecl.RESTART.NAME[iw][it]);
-                    }
-                }
-            }
+            GetDinamicProperties(istep);
         }
 
         public void OpenNewModel(string filename)
@@ -51,29 +55,16 @@ namespace She
             ecl.ReadVectors();
             ecl.ReadRestartList();
             
-            // Update wellnames
-
             Wellnames =
                 (from item in ecl.VECTORS
                  where item.Type == NameOptions.Well
                  select item.Name).ToList();
 
-            Wellnames.Sort();
-
             RestartDates =
                 (from item in ecl.RESTART.DATE
                  select item.ToShortDateString()).ToList();
 
-            //
-
-            StaticProperties = new List<string>();
-
-            for (int iw = 0; iw < ecl.INIT.NAME.Count; ++iw)
-                for (int it = 0; it < ecl.INIT.NAME[iw].Length; ++it)
-                    if (ecl.INIT.NUMBER[iw][it] == ecl.INIT.NACTIV)
-                    {
-                        StaticProperties.Add(ecl.INIT.NAME[iw][it]);
-                    }
+            GetStaticProperties();
         }
     }
 }

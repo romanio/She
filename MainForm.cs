@@ -13,6 +13,8 @@ namespace She
         MainFormView view = new MainFormView();
         Engine3D engine = new Engine3D();
 
+        bool editRestartDates = false;
+
         public MainForm()
         {
             InitializeComponent();
@@ -25,22 +27,33 @@ namespace She
             GlControlPaint(null, null);
         }
 
+        void UpdateVisualData()
+        {
+            editRestartDates = true;
+
+            boxRestartDate.Items.Clear();
+            boxRestartDate.Items.AddRange(view.RestartDates.ToArray());
+
+
+            boxRestartDate.SelectedIndex = 0;
+            editRestartDates = false;
+
+            // Получить имена статики
+
+            treeProperties.Nodes[0].Nodes.Clear();
+            for (int iw = 0; iw < view.StaticProperties.Count; ++iw)
+                treeProperties.Nodes[0].Nodes.Add(view.StaticProperties[iw]);
+
+//            engine.GenerateGraphics(view.ecl);
+        }
+
+
         private void openModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
                 view.OpenNewModel(fileDialog.FileName);
-
-                boxRestartDate.Items.Clear();
-                boxRestartDate.Items.AddRange(view.RestartDates.ToArray());
-
-                // Получить имена статики
-
-                treeProperties.Nodes[0].Nodes.Clear();
-                for (int iw = 0; iw < view.StaticProperties.Count; ++iw)
-                    treeProperties.Nodes[0].Nodes.Add(view.StaticProperties[iw]);
-
-                engine.GenerateGraphics(view.ecl);
+                UpdateVisualData();
             }
         }
 
@@ -88,6 +101,8 @@ namespace She
 
         private void boxRestartDate_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (editRestartDates) return;
+
             if (boxRestartDate.SelectedIndex == -1) return;
 
             view.ReadRestartFile(boxRestartDate.SelectedIndex);
@@ -98,7 +113,7 @@ namespace She
             for (int iw = 0; iw < view.DynamicProperties.Count; ++iw)
                 treeProperties.Nodes[1].Nodes.Add(view.DynamicProperties[iw]);
 
-            engine.GenerateGraphics(view.ecl);
+            //engine.GenerateGraphics(view.ecl);
         }
 
         /*

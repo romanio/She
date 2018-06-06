@@ -142,7 +142,7 @@ namespace She
 
             GL.PushMatrix();
 
-            GL.Scale(camera.Scale, camera.Scale, camera.Scale * 24);
+            GL.Scale(camera.Scale, camera.Scale, camera.Scale);
             GL.Translate(-XC, -YC, -ZC);
 
             if (IsLoaded)
@@ -269,6 +269,12 @@ namespace She
 
 
         bool IsLoaded = false;
+
+        void ConvertWorldToScreen()
+        {
+
+        }
+
 
         void WellRender()
         {
