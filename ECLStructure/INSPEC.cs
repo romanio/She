@@ -143,7 +143,7 @@ namespace She.ECLStructure
 
         public float[] DATA = null;
 
-        public void ReadInitGrid(string property)
+        public void ReadGrid(string property)
         {
             FileReader br = new FileReader();
 
@@ -176,7 +176,7 @@ namespace She.ECLStructure
             br.CloseBinaryFile();
         }
 
-        public float GetValue(int index)
+       public float GetValue(int index)
         {
             return DATA[index];
         }

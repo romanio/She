@@ -7,9 +7,37 @@ using She.ECLStructure;
 
 namespace She
 {
+    public class Pair<T, U>
+    {
+        public Pair()
+        {
+        }
+
+        public Pair(T first, U second)
+        {
+            this.First = first;
+            this.Second = second;
+        }
+
+        public T First { get; set; }
+        public U Second { get; set; }
+    };
+
+    public class VisualFilter
+    {
+        public Pair<bool, int> I = new Pair<bool, int>();
+        public Pair<bool, int> J = new Pair<bool, int>();
+        public Pair<bool, int> K = new Pair<bool, int>();
+        public Pair<bool, float> min = new Pair<bool, float>();
+        public Pair<bool, float> max = new Pair<bool, float>();
+    }
+
+
     public class MainFormView
     {
         public ECL ecl = null;
+        public Engine3D engine = new Engine3D();
+        public Grid3D grid = new Grid3D();
 
         public List<string> Wellnames { get; set; }
         public List<string> RestartDates { get; set; }
@@ -36,9 +64,23 @@ namespace She
                         DynamicProperties.Add(ecl.RESTART.NAME[istep][it]);
         }
 
-        public void SetStaticProperty(string name)
+        public void SetDynamicProperty(string name)
+        {
+            ecl.RESTART.ReadGrid(name);
+            grid.GenerateGraphics(ecl, ecl.RESTART.GetValue);
+            engine.SetGridModel(grid);
+        }
+
+        public void SetVisualFilter(VisualFilter filter)
         {
 
+        }
+
+        public void SetStaticProperty(string name)
+        {
+            ecl.INIT.ReadGrid(name);
+            grid.GenerateGraphics(ecl, ecl.INIT.GetValue);
+            engine.SetGridModel(grid);
         }
 
         public void ReadRestartFile(int istep)

@@ -280,7 +280,7 @@ namespace She.ECLStructure
             return DATA[index];
         }
 
-        public void ReadRestartGrid(string property)
+        public void ReadGrid(string property)
         {
             FileReader br = new FileReader();
 
