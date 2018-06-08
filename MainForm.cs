@@ -118,21 +118,24 @@ namespace She
 
         private void button1_Click(object sender, EventArgs e)
         {
-            VisualFilter filter = new VisualFilter();
-            filter.I.First = chkICoord.Checked;
-            filter.I.Second = (int)(numIcoord.Value);
-            filter.J.First = chkJCoord.Checked;
-            filter.J.Second = (int)(numJcoord.Value);
-            filter.K.First = chkKCoord.Checked;
-            filter.K.Second = (int)(numKcoord.Value);
+            VisualFilter m_filter = new VisualFilter();
 
-            view.SetVisualFilter(filter);
-            /*
-            f.min.First = chkMinimum.Checked;
-            f.min.Second = (int)(numKcoord.Value);
-            f.max.First = chkMaximum.Checked;
-            f.max.Second = (int)(numKcoord.Value);
-            */
+            m_filter.ICfrom.First = chkICoord.Checked;
+            m_filter.ICfrom.Second = (int)(numICfrom.Value);
+            m_filter.ICto.First = chkICoord.Checked;
+            m_filter.ICto.Second = (int)(numICto.Value);
+
+            m_filter.JCfrom.First = chkJCoord.Checked;
+            m_filter.JCfrom.Second = (int)(numJCfrom.Value);
+            m_filter.JCto.First = chkJCoord.Checked;
+            m_filter.JCto.Second = (int)(numJCto.Value);
+
+            m_filter.KCfrom.First = chkKCoord.Checked;
+            m_filter.KCfrom.Second = (int)(numKCfrom.Value);
+            m_filter.KCto.First = chkKCoord.Checked;
+            m_filter.KCto.Second = (int)(numKCto.Value);
+
+            view.SetVisualFilter(m_filter);
         }
     }
 }

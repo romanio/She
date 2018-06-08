@@ -17,7 +17,7 @@ namespace She
         Colorizer Colorizer = new Colorizer();
         public int ElementCount;
 
-        public void GenerateGraphics(ECL ecl, Func<int, float> GetValue)
+        public void GenerateGraphics(ECL ecl, Func<int, float> GetValue, VisualFilter filter)
         {
             Cell CELL;
 
@@ -65,14 +65,25 @@ namespace She
             bool skip_top_face = false;
             bool skip_back_face = false;
 
+            HashSet<int> ZSet = new HashSet<int>();
+            ZSet.Add(4);
+            /*
+            for (int Z = 0; Z < ecl.INIT.NZ; Z=Z+2)
+            {
+                ZSet.Add(Z);
+            }
+            */
+
             unsafe
             {
                 float* vertex_mem = (float*)VertexPtr;
                 int* index_mem = (int*)ElementPtr;
                 byte* color_mem = (byte*)(VertexPtr + ecl.INIT.NACTIV * sizeof(float) * 3 * 8);
 
-                for (int Z = 0; Z < ecl.INIT.NZ; ++Z)
-                {
+                foreach(int Z in ZSet)
+                { 
+                //for (int Z = 0; Z < ecl.INIT.NZ; ++Z)
+                //{
                     for (int Y = 0; Y < ecl.INIT.NY; ++Y)
                     {
                         for (int X = 0; X < ecl.INIT.NX; ++X)

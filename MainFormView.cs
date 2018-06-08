@@ -25,9 +25,12 @@ namespace She
 
     public class VisualFilter
     {
-        public Pair<bool, int> I = new Pair<bool, int>();
-        public Pair<bool, int> J = new Pair<bool, int>();
-        public Pair<bool, int> K = new Pair<bool, int>();
+        public Pair<bool, int> ICfrom = new Pair<bool, int>();
+        public Pair<bool, int> ICto = new Pair<bool, int>();
+        public Pair<bool, int> JCfrom = new Pair<bool, int>();
+        public Pair<bool, int> JCto = new Pair<bool, int>();
+        public Pair<bool, int> KCfrom = new Pair<bool, int>();
+        public Pair<bool, int> KCto = new Pair<bool, int>();
         public Pair<bool, float> min = new Pair<bool, float>();
         public Pair<bool, float> max = new Pair<bool, float>();
     }
@@ -67,7 +70,7 @@ namespace She
         public void SetDynamicProperty(string name)
         {
             ecl.RESTART.ReadGrid(name);
-            grid.GenerateGraphics(ecl, ecl.RESTART.GetValue);
+            grid.GenerateGraphics(ecl, ecl.RESTART.GetValue, null);
             engine.SetGridModel(grid);
         }
 
@@ -79,7 +82,7 @@ namespace She
         public void SetStaticProperty(string name)
         {
             ecl.INIT.ReadGrid(name);
-            grid.GenerateGraphics(ecl, ecl.INIT.GetValue);
+            grid.GenerateGraphics(ecl, ecl.INIT.GetValue, null);
             engine.SetGridModel(grid);
         }
 
