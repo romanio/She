@@ -65,28 +65,63 @@ namespace She
             bool skip_top_face = false;
             bool skip_back_face = false;
 
-            HashSet<int> ZSet = new HashSet<int>();
-            ZSet.Add(4);
-            /*
-            for (int Z = 0; Z < ecl.INIT.NZ; Z=Z+2)
-            {
-                ZSet.Add(Z);
-            }
-            */
+            // Применить индексные фильтры
 
+            HashSet<int> XSet = new HashSet<int>();
+            HashSet<int> YSet = new HashSet<int>();
+            HashSet<int> ZSet = new HashSet<int>();
+
+            if (filter != null)
+            {
+                int X_start = (filter.ICfrom.First) ? filter.ICfrom.Second - 1 : 0;
+                int X_end = (filter.ICto.First) ? filter.ICto.Second - 1 : ecl.INIT.NX;
+
+                int Y_start = (filter.JCfrom.First) ? filter.JCfrom.Second - 1 : 0;
+                int Y_end = (filter.JCto.First) ? filter.JCto.Second - 1 : ecl.INIT.NY;
+
+                int Z_start = (filter.KCfrom.First) ? filter.KCfrom.Second - 1 : 0;
+                int Z_end = (filter.KCto.First) ? filter.KCto.Second - 1 : ecl.INIT.NZ;
+
+                for (int X = X_start; X < X_end; ++X)
+                    XSet.Add(X);
+
+                for (int Y = Y_start; Y < Y_end; ++Y)
+                    YSet.Add(Y);
+
+                for (int Z = Z_start; Z < Z_end; ++Z)
+                    ZSet.Add(Z);
+
+            }
+            else
+            {
+                for (int X = 0; X < ecl.INIT.NX; ++X)
+                {
+                    XSet.Add(X);
+                }
+
+                for (int Y = 0; Y < ecl.INIT.NY; ++Y)
+                {
+                    YSet.Add(Y);
+                }
+
+                for (int Z = 0; Z < ecl.INIT.NZ; ++Z)
+                {
+                    ZSet.Add(Z);
+                }
+            }
+
+            
             unsafe
             {
                 float* vertex_mem = (float*)VertexPtr;
                 int* index_mem = (int*)ElementPtr;
                 byte* color_mem = (byte*)(VertexPtr + ecl.INIT.NACTIV * sizeof(float) * 3 * 8);
 
-                foreach(int Z in ZSet)
-                { 
-                //for (int Z = 0; Z < ecl.INIT.NZ; ++Z)
-                //{
-                    for (int Y = 0; Y < ecl.INIT.NY; ++Y)
+                foreach (int Z in ZSet)
+                {
+                    foreach (int Y in YSet)
                     {
-                        for (int X = 0; X < ecl.INIT.NX; ++X)
+                        foreach (int X in XSet)
                         {
                             cell_index = ecl.INIT.GetActive(X, Y, Z);
 
@@ -226,9 +261,20 @@ namespace She
 
                                 int pos = 0;
 
+                                // Debug
+
+                                skip_right_face = false;
+                                skip_top_face = false;
+
+                                skip_back_face = false;
+                                skip_front_face = false;
+
+                                skip_left_face = false;
+                                skip_bottom_face = false;
+                                
                                 // top face 
 
-                                if (skip_top_face)
+                                if (!skip_top_face)
                                 {
                                     index_mem[count + (pos++)] = index + 0;
                                     index_mem[count + (pos++)] = index + 1;

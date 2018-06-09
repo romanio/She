@@ -74,15 +74,17 @@ namespace She
             engine.SetGridModel(grid);
         }
 
+        VisualFilter m_filter = null;
+
         public void SetVisualFilter(VisualFilter filter)
         {
-
+            m_filter = filter;
         }
 
         public void SetStaticProperty(string name)
         {
             ecl.INIT.ReadGrid(name);
-            grid.GenerateGraphics(ecl, ecl.INIT.GetValue, null);
+            grid.GenerateGraphics(ecl, ecl.INIT.GetValue, m_filter);
             engine.SetGridModel(grid);
         }
 

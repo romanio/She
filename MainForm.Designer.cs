@@ -43,6 +43,11 @@
             this.treeProperties = new System.Windows.Forms.TreeView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.numKCto = new System.Windows.Forms.NumericUpDown();
+            this.numJCto = new System.Windows.Forms.NumericUpDown();
+            this.numICto = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.chkMaximum = new System.Windows.Forms.CheckBox();
             this.chkMinimum = new System.Windows.Forms.CheckBox();
             this.chkKCoord = new System.Windows.Forms.CheckBox();
@@ -55,21 +60,16 @@
             this.numJCfrom = new System.Windows.Forms.NumericUpDown();
             this.numICfrom = new System.Windows.Forms.NumericUpDown();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.numKCto = new System.Windows.Forms.NumericUpDown();
-            this.numJCto = new System.Windows.Forms.NumericUpDown();
-            this.numICto = new System.Windows.Forms.NumericUpDown();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numKCfrom)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numJCfrom)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numICfrom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numKCto)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numJCto)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numICto)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numKCfrom)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numJCfrom)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numICfrom)).BeginInit();
             this.SuspendLayout();
             // 
             // glControl
@@ -212,6 +212,75 @@
             this.tabPage1.Text = "Filters";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // numKCto
+            // 
+            this.numKCto.Location = new System.Drawing.Point(177, 90);
+            this.numKCto.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numKCto.Name = "numKCto";
+            this.numKCto.Size = new System.Drawing.Size(57, 21);
+            this.numKCto.TabIndex = 6;
+            this.numKCto.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numJCto
+            // 
+            this.numJCto.Location = new System.Drawing.Point(177, 63);
+            this.numJCto.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numJCto.Name = "numJCto";
+            this.numJCto.Size = new System.Drawing.Size(57, 21);
+            this.numJCto.TabIndex = 4;
+            this.numJCto.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numICto
+            // 
+            this.numICto.Location = new System.Drawing.Point(177, 36);
+            this.numICto.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numICto.Name = "numICto";
+            this.numICto.Size = new System.Drawing.Size(57, 21);
+            this.numICto.TabIndex = 2;
+            this.numICto.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(174, 11);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(19, 13);
+            this.label4.TabIndex = 17;
+            this.label4.Text = "To";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(101, 11);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(31, 13);
+            this.label3.TabIndex = 16;
+            this.label3.Text = "From";
+            // 
             // chkMaximum
             // 
             this.chkMaximum.AutoSize = true;
@@ -267,7 +336,7 @@
             this.button1.Location = new System.Drawing.Point(137, 313);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(97, 23);
-            this.button1.TabIndex = 10;
+            this.button1.TabIndex = 9;
             this.button1.Text = "Apply";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -277,14 +346,14 @@
             this.boxMaximum.Location = new System.Drawing.Point(143, 164);
             this.boxMaximum.Name = "boxMaximum";
             this.boxMaximum.Size = new System.Drawing.Size(91, 21);
-            this.boxMaximum.TabIndex = 9;
+            this.boxMaximum.TabIndex = 8;
             // 
             // boxMinimum
             // 
             this.boxMinimum.Location = new System.Drawing.Point(143, 136);
             this.boxMinimum.Name = "boxMinimum";
             this.boxMinimum.Size = new System.Drawing.Size(91, 21);
-            this.boxMinimum.TabIndex = 8;
+            this.boxMinimum.TabIndex = 7;
             // 
             // numKCfrom
             // 
@@ -296,7 +365,7 @@
             0});
             this.numKCfrom.Name = "numKCfrom";
             this.numKCfrom.Size = new System.Drawing.Size(57, 21);
-            this.numKCfrom.TabIndex = 4;
+            this.numKCfrom.TabIndex = 5;
             this.numKCfrom.Value = new decimal(new int[] {
             1,
             0,
@@ -342,79 +411,10 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(192, 372);
+            this.tabPage2.Size = new System.Drawing.Size(248, 372);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(101, 11);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(31, 13);
-            this.label3.TabIndex = 16;
-            this.label3.Text = "From";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(174, 11);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(19, 13);
-            this.label4.TabIndex = 17;
-            this.label4.Text = "To";
-            // 
-            // numKCto
-            // 
-            this.numKCto.Location = new System.Drawing.Point(177, 90);
-            this.numKCto.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numKCto.Name = "numKCto";
-            this.numKCto.Size = new System.Drawing.Size(57, 21);
-            this.numKCto.TabIndex = 20;
-            this.numKCto.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // numJCto
-            // 
-            this.numJCto.Location = new System.Drawing.Point(177, 63);
-            this.numJCto.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numJCto.Name = "numJCto";
-            this.numJCto.Size = new System.Drawing.Size(57, 21);
-            this.numJCto.TabIndex = 19;
-            this.numJCto.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // numICto
-            // 
-            this.numICto.Location = new System.Drawing.Point(177, 36);
-            this.numICto.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numICto.Name = "numICto";
-            this.numICto.Size = new System.Drawing.Size(57, 21);
-            this.numICto.TabIndex = 18;
-            this.numICto.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             // 
             // MainForm
             // 
@@ -442,12 +442,12 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numKCfrom)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numJCfrom)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numICfrom)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numKCto)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numJCto)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numICto)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numKCfrom)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numJCfrom)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numICfrom)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
