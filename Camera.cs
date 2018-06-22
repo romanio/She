@@ -21,7 +21,7 @@ namespace She
 
         public Camera()
         {
-            Position = new Vector3(0, 0, +6);
+            Position = new Vector3(0, 0, -6);
             Target = new Vector3(0, 0, 0);
             UpDirection = new Vector3(0, 1, 0);
 
@@ -80,8 +80,8 @@ namespace She
         public void Rotate(float dx, float dy)
         {
             Vector3 UpModel = new Vector3(0, 0, 1);
-            Quaternion q1 = Quaternion.FromAxisAngle(UpModel, -RotationSensitivity * dx);
-            Quaternion q2 = Quaternion.FromAxisAngle(RightAxis, -RotationSensitivity * dy);
+            Quaternion q1 = Quaternion.FromAxisAngle(UpModel, RotationSensitivity * dx);
+            Quaternion q2 = Quaternion.FromAxisAngle(-RightAxis, RotationSensitivity * dy);
             Quaternion q = q1 * q2;
 
             // Вращать вокруг центра Target, для этого текущую Position переносим в условный ноль

@@ -92,7 +92,7 @@ namespace She
                     ZSet.Add(Z);
 
             }
-            else
+            else // Если не используется фильтр, обычное индексирование
             {
                 for (int X = 0; X < ecl.INIT.NX; ++X)
                 {
@@ -110,6 +110,7 @@ namespace She
                 }
             }
 
+            //
             
             unsafe
             {
