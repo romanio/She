@@ -21,8 +21,9 @@ namespace She
             glControl.MouseWheel += GlControlOnMouseWheel;
 
             var theme = new VS2015LightTheme();
+            
             dockPanel.Theme = theme;
-     //       dockPanel
+            
 
             FormNames f_names = new FormNames();
 
