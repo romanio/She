@@ -20,14 +20,12 @@ namespace She
             InitializeComponent();
             glControl.MouseWheel += GlControlOnMouseWheel;
 
+            /*
             var theme = new VS2015LightTheme();
-            
             dockPanel.Theme = theme;
-            
-
             FormNames f_names = new FormNames();
-
             f_names.Show(dockPanel, DockState.Document);
+            */
         }
 
         private void GlControlOnMouseWheel(object sender, MouseEventArgs e)

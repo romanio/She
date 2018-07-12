@@ -158,6 +158,10 @@ namespace She
 
         public void RenderEasyCube()
         {
+
+
+            ConvertWorldToScreen();
+
             GL.Begin(PrimitiveType.Quads);
             GL.Color3(Color.Green);
             GL.Vertex3(1.0, 1.0, -1.0);
@@ -255,6 +259,7 @@ namespace She
             GL.Color3(Color.Black);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.DrawElements(PrimitiveType.Quads, m_grid.ElementCount, DrawElementsType.UnsignedInt, 0);
+
         }
 
 
@@ -268,7 +273,17 @@ namespace She
 
         void ConvertWorldToScreen()
         {
+            Vector3 pnt = new Vector3(0, 0, 0);
 
+            pnt = Vector3.Transform(pnt, modelview);
+            pnt = Vector3.Transform(pnt, projection);
+            pnt.X /= pnt.Z;
+            pnt.Y /= pnt.Z;
+
+            pnt.X = (pnt.X + 1) * _width / 2;
+            pnt.Y = (pnt.Y + 1) * _height / 2;
+
+            System.Diagnostics.Debug.WriteLine(pnt.X + " " + pnt.Y);
         }
 
         /*
@@ -325,13 +340,19 @@ namespace She
         }
         */
 
+        Matrix4 projection;
+
+        float _width;
+        float _height;
 
         public void Resize(int width, int height)
         {
             float aspect = (float)width / (float)height;
             GL.Viewport(0, 0, width, height);
+            _width = width;
+            _height = height;
 
-            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, aspect, 0.1f, 1000f);
+            projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver6, aspect, 0.1f, 1000f);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref projection);
 
@@ -340,6 +361,7 @@ namespace She
         }
 
         Matrix4 modelview = new Matrix4();
+
         void UpdateModelView()
         {
             modelview = Matrix4.LookAt(camera.Position, camera.Target, camera.UpDirection);
