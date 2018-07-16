@@ -127,6 +127,10 @@ namespace She
 
         }
 
+        TextRender txt_render;
+        Font Serif = new Font(FontFamily.GenericSerif, 12, FontStyle.Regular);
+
+
         public void Paint()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -154,14 +158,56 @@ namespace She
             }
 
             GL.PopMatrix();
+
+            // Switch to 2D projection
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PushMatrix();
+
+            GL.LoadIdentity();
+            GL.Ortho(0, _width, 0, _height, -1, +1);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+            GL.PointSize(4);
+
+            //
+            txt_render.Clear(Color.Red);
+            txt_render.DrawString("Hello", Serif, Brushes.Black, new PointF(20, 20));
+            txt_render.DrawString("Hello", Serif, Brushes.Black, new PointF(0, 0));
+            txt_render.DrawString("Hello", Serif, Brushes.Black, new PointF(40, 40));
+
+            GL.Enable(EnableCap.Texture2D);
+            GL.BindTexture(TextureTarget.Texture2D, txt_render.Texture);
+
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color3(Color.Black);
+            GL.TexCoord2(0, 0);
+            GL.Vertex3(0, 0, 0);
+            GL.TexCoord2(1, 0);
+            GL.Vertex3(200, 0, 0);
+            GL.TexCoord2(1, 1);
+            GL.Vertex3(200, 200, 0);
+            GL.TexCoord2(0, 1);
+            GL.Vertex3(0, 200, 0);
+
+            GL.End();
+
+            GL.Disable(EnableCap.Texture2D);
+            //
+
+            GL.PopMatrix();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PopMatrix();
+
+            GL.MatrixMode(MatrixMode.Modelview);
+
+            // Switch to 3D 
+
         }
 
         public void RenderEasyCube()
         {
-
-
-            ConvertWorldToScreen();
-
             GL.Begin(PrimitiveType.Quads);
             GL.Color3(Color.Green);
             GL.Vertex3(1.0, 1.0, -1.0);
@@ -271,19 +317,17 @@ namespace She
             IsLoaded = true;
         }
 
-        void ConvertWorldToScreen()
+        Vector2 ConvertWorldToScreen(Vector3 point)
         {
-            Vector3 pnt = new Vector3(0, 0, 0);
+            point = Vector3.Transform(point, modelview);
+            point = Vector3.Transform(point, projection);
+            point.X /= point.Z;
+            point.Y /= point.Z;
 
-            pnt = Vector3.Transform(pnt, modelview);
-            pnt = Vector3.Transform(pnt, projection);
-            pnt.X /= pnt.Z;
-            pnt.Y /= pnt.Z;
+            point.X = (point.X + 1) * _width / 2;
+            point.Y = (point.Y + 1) * _height / 2;
 
-            pnt.X = (pnt.X + 1) * _width / 2;
-            pnt.Y = (pnt.Y + 1) * _height / 2;
-
-            System.Diagnostics.Debug.WriteLine(pnt.X + " " + pnt.Y);
+            return new Vector2(point.X, point.Y);
         }
 
         /*
@@ -358,6 +402,10 @@ namespace She
 
             GL.MatrixMode(MatrixMode.Modelview);
             UpdateModelView();
+
+            //
+            if (txt_render != null) txt_render.Dispose();
+            txt_render = new TextRender(200, 200);
         }
 
         Matrix4 modelview = new Matrix4();
