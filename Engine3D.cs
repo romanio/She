@@ -22,7 +22,7 @@ namespace She
         {
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.PolygonOffsetFill);
-            GL.Enable(EnableCap.CullFace);
+            //GL.Enable(EnableCap.CullFace);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(Color.White);
@@ -36,7 +36,7 @@ namespace She
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
 
-            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
+            //GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
         }
 
         public void UnLoad()
@@ -128,7 +128,7 @@ namespace She
         }
 
         TextRender txt_render;
-        Font Serif = new Font(FontFamily.GenericSerif, 12, FontStyle.Regular);
+        Font Serif = new Font("Segoe Pro Cond", 14, FontStyle.Regular);
 
 
         public void Paint()
@@ -164,7 +164,7 @@ namespace She
             GL.PushMatrix();
 
             GL.LoadIdentity();
-            GL.Ortho(0, _width, 0, _height, -1, +1);
+            GL.Ortho(0, _width,  _height, 0, -1, +1);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.PushMatrix();
@@ -172,27 +172,36 @@ namespace She
             GL.PointSize(4);
 
             //
-            txt_render.Clear(Color.Red);
+            txt_render.Clear(Color.Transparent);
             txt_render.DrawString("Hello", Serif, Brushes.Black, new PointF(20, 20));
             txt_render.DrawString("Hello", Serif, Brushes.Black, new PointF(0, 0));
             txt_render.DrawString("Hello", Serif, Brushes.Black, new PointF(40, 40));
 
+            Vector2 pos_coord = ConvertWorldToScreen(new Vector3(1, 1, 2));
+            System.Diagnostics.Debug.WriteLine("X = " + pos_coord.X + "  Y = " + pos_coord.Y);
+            if (pos_coord.X > 0 && pos_coord.Y > 0)
+            {
+                txt_render.DrawString("(1, 1, 2)", Serif, Brushes.Black, new PointF(pos_coord.X, pos_coord.Y));
+            }
+
             GL.Enable(EnableCap.Texture2D);
             GL.BindTexture(TextureTarget.Texture2D, txt_render.Texture);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
 
             GL.Begin(PrimitiveType.Quads);
-            GL.Color3(Color.Black);
-            GL.TexCoord2(0, 0);
+            GL.Color3(Color.White);
+            GL.TexCoord2(0,0);
             GL.Vertex3(0, 0, 0);
             GL.TexCoord2(1, 0);
-            GL.Vertex3(200, 0, 0);
+            GL.Vertex3(_width, 0, 0);
             GL.TexCoord2(1, 1);
-            GL.Vertex3(200, 200, 0);
+            GL.Vertex3(_width, _height, 0);
             GL.TexCoord2(0, 1);
-            GL.Vertex3(0, 200, 0);
+            GL.Vertex3(0, _height, 0);
 
             GL.End();
-
+            GL.Disable(EnableCap.Blend);
             GL.Disable(EnableCap.Texture2D);
             //
 
@@ -325,7 +334,7 @@ namespace She
             point.Y /= point.Z;
 
             point.X = (point.X + 1) * _width / 2;
-            point.Y = (point.Y + 1) * _height / 2;
+            point.Y = _height - (point.Y + 1) * _height / 2;
 
             return new Vector2(point.X, point.Y);
         }
@@ -405,7 +414,7 @@ namespace She
 
             //
             if (txt_render != null) txt_render.Dispose();
-            txt_render = new TextRender(200, 200);
+            txt_render = new TextRender((int)_width, (int)_height);
         }
 
         Matrix4 modelview = new Matrix4();

@@ -47,7 +47,7 @@ class TextRender : IDisposable
 
     public void DrawString(string text, Font font, Brush brush, PointF point)
     {
-        gfx.FillPie(Brushes.Red, new Rectangle((int)(point.X), (int)(point.Y), 40, 40), 0, -180);
+        //gfx.FillPie(Brushes.Red, new Rectangle((int)(point.X), (int)(point.Y), 40, 40), 0, -180);
         gfx.DrawString(text, font, brush, point);
         SizeF size = gfx.MeasureString(text, font);
         dirty_region = Rectangle.Round(RectangleF.Union(dirty_region, new RectangleF(point, size)));
