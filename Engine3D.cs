@@ -22,7 +22,8 @@ namespace She
         {
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.PolygonOffsetFill);
-            //GL.Enable(EnableCap.CullFace);
+            GL.Enable(EnableCap.CullFace);
+            GL.FrontFace(FrontFaceDirection.Ccw);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(Color.White);
@@ -36,7 +37,7 @@ namespace She
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
 
-            //GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
+           // GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
         }
 
         public void UnLoad()
@@ -148,7 +149,7 @@ namespace She
 
             if (IsLoaded)
             {
-                GL.Scale(camera.Scale, camera.Scale, camera.Scale * 12);
+                GL.Scale(camera.Scale, camera.Scale, camera.Scale * 4);
                 GL.Translate(-m_grid.XC, -m_grid.YC, -m_grid.ZC);
                 Render();
             }
@@ -177,11 +178,11 @@ namespace She
             txt_render.DrawString("Hello", Serif, Brushes.Black, new PointF(0, 0));
             txt_render.DrawString("Hello", Serif, Brushes.Black, new PointF(40, 40));
 
-            Vector2 pos_coord = ConvertWorldToScreen(new Vector3(1, 1, 2));
-            System.Diagnostics.Debug.WriteLine("X = " + pos_coord.X + "  Y = " + pos_coord.Y);
+            Vector2 pos_coord = ConvertWorldToScreen(new Vector3(0, 0, 0));
+            //System.Diagnostics.Debug.WriteLine("X = " + pos_coord.X + "  Y = " + pos_coord.Y);
             if (pos_coord.X > 0 && pos_coord.Y > 0)
             {
-                txt_render.DrawString("(1, 1, 2)", Serif, Brushes.Black, new PointF(pos_coord.X, pos_coord.Y));
+                txt_render.DrawString("(0, 0, 0)", Serif, Brushes.Black, new PointF(pos_coord.X, pos_coord.Y));
             }
 
             GL.Enable(EnableCap.Texture2D);
@@ -191,14 +192,14 @@ namespace She
 
             GL.Begin(PrimitiveType.Quads);
             GL.Color3(Color.White);
-            GL.TexCoord2(0,0);
+            GL.TexCoord2(0, 0);
             GL.Vertex3(0, 0, 0);
             GL.TexCoord2(1, 0);
-            GL.Vertex3(_width, 0, 0);
+            GL.Vertex3(200, 0, 0);
             GL.TexCoord2(1, 1);
-            GL.Vertex3(_width, _height, 0);
+            GL.Vertex3(200, 200, 0);
             GL.TexCoord2(0, 1);
-            GL.Vertex3(0, _height, 0);
+            GL.Vertex3(0, 200, 0);
 
             GL.End();
             GL.Disable(EnableCap.Blend);
@@ -302,20 +303,21 @@ namespace She
         {
             // Отрисовка ячеек
 
-            GL.PolygonOffset(+1, +1);
+            //GL.PolygonOffset(+1, +1);
             GL.EnableClientState(ArrayCap.ColorArray);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
             GL.DrawElements(PrimitiveType.Quads, m_grid.ElementCount, DrawElementsType.UnsignedInt, 0);
 
             // Отрисовка границ
-
+  
+            /*
             GL.PolygonOffset(0, 0);
             GL.DisableClientState(ArrayCap.ColorArray);
             GL.Color3(Color.Black);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.DrawElements(PrimitiveType.Quads, m_grid.ElementCount, DrawElementsType.UnsignedInt, 0);
-
-        }
+           */
+            }
 
 
         bool IsLoaded = false;
